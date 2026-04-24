@@ -25,6 +25,7 @@ import ProviderDashboard from "./pages/provider/Dashboard";
 import ProviderIncoming from "./pages/provider/Incoming";
 import ProviderAssigned from "./pages/provider/Assigned";
 import GuestHomepage from "./pages/guest/GuestHomepage";
+import ContactPage from "./pages/guest/ContactPage";
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -120,6 +121,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<GuestHomepage />} />
+          <Route path="/contact" element={<ContactPage />} />
 
           {/* Admin Routes */}
           <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
