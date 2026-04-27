@@ -1,11 +1,12 @@
 import React from 'react';
-import { Sparkles, Wrench, Zap, PaintRoller, Hammer, Truck } from 'lucide-react';
+import { Sparkles, Wrench, Zap, PaintRoller, Hammer, Truck, MapPin } from 'lucide-react';
 
 const servicesList = [
   {
     icon: Sparkles,
     title: 'Deep Cleaning',
     description: 'Comprehensive house cleaning services for a sparkling home environment.',
+    location: 'Pune, Maharashtra',
     color: 'bg-emerald-50 text-emerald-600',
     hover: 'group-hover:bg-emerald-600 group-hover:text-white',
   },
@@ -13,6 +14,7 @@ const servicesList = [
     icon: Wrench,
     title: 'Plumbing',
     description: 'Expert fixes for leaks, installations, and general plumbing repairs.',
+    location: 'Mumbai, Maharashtra',
     color: 'bg-blue-50 text-blue-600',
     hover: 'group-hover:bg-blue-600 group-hover:text-white',
   },
@@ -20,6 +22,7 @@ const servicesList = [
     icon: Zap,
     title: 'Electrical',
     description: 'Safe and reliable electrical installations and troubleshooting.',
+    location: 'Pune, Maharashtra',
     color: 'bg-amber-50 text-amber-600',
     hover: 'group-hover:bg-amber-600 group-hover:text-white',
   },
@@ -27,6 +30,7 @@ const servicesList = [
     icon: PaintRoller,
     title: 'Painting',
     description: 'Professional interior and exterior painting for a fresh new look.',
+    location: 'Bangalore, Karnataka',
     color: 'bg-rose-50 text-rose-600',
     hover: 'group-hover:bg-rose-600 group-hover:text-white',
   },
@@ -34,6 +38,7 @@ const servicesList = [
     icon: Hammer,
     title: 'Carpentry',
     description: 'Custom woodworking, furniture repair, and cabinetry solutions.',
+    location: 'Delhi, NCR',
     color: 'bg-orange-50 text-orange-600',
     hover: 'group-hover:bg-orange-600 group-hover:text-white',
   },
@@ -41,12 +46,26 @@ const servicesList = [
     icon: Truck,
     title: 'Moving Services',
     description: 'Hassle-free relocation and packing services you can trust.',
+    location: 'Mumbai, Maharashtra',
     color: 'bg-indigo-50 text-indigo-600',
     hover: 'group-hover:bg-indigo-600 group-hover:text-white',
   }
 ];
 
-const Services = () => {
+const Services = ({ searchQuery = '', locationQuery = '' }) => {
+  const filteredServices = servicesList.filter(service => {
+    const sQuery = searchQuery.toLowerCase();
+    const lQuery = locationQuery.toLowerCase();
+    
+    const matchesSearch = service.title.toLowerCase().includes(sQuery) || 
+                         service.description.toLowerCase().includes(sQuery) ||
+                         service.location.toLowerCase().includes(sQuery);
+                         
+    const matchesLocation = service.location.toLowerCase().includes(lQuery);
+    
+    return matchesSearch && matchesLocation;
+  });
+
   return (
     <section id="services" className="py-20 bg-slate-50 relative overflow-hidden">
       {/* Background decorations */}
@@ -60,17 +79,19 @@ const Services = () => {
           <h2 className="text-sm font-bold tracking-widest text-indigo-600 uppercase mb-3">What We Offer</h2>
           <h3 className="text-4xl font-extrabold text-slate-900 sm:text-5xl">Our Essential Services</h3>
           <p className="mt-4 text-lg text-slate-600">
-            We provide top-tier home services with vetted professionals to ensure quality, safety, and peace of mind.
+            {filteredServices.length > 0 
+              ? "We provide top-tier home services with vetted professionals to ensure quality, safety, and peace of mind."
+              : "No services found matching your search. Please try different terms."}
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {servicesList.map((service, index) => {
+          {filteredServices.map((service, index) => {
             const Icon = service.icon;
             return (
               <div 
                 key={index} 
-                className="group bg-white rounded-[2rem] p-8 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-slate-100 cursor-pointer"
+                className="group bg-white rounded-[2rem] p-8 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-slate-100 cursor-pointer flex flex-col"
               >
                 <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-colors duration-300 ${service.color} ${service.hover}`}>
                   <Icon className="w-8 h-8" />
@@ -78,11 +99,18 @@ const Services = () => {
                 <h4 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors">
                   {service.title}
                 </h4>
-                <p className="text-slate-600 leading-relaxed">
+                <p className="text-slate-600 leading-relaxed mb-6 flex-1">
                   {service.description}
                 </p>
-                <div className="mt-6 flex items-center text-indigo-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity transform -translate-x-4 group-hover:translate-x-0 duration-300">
-                  Book Now →
+                
+                <div className="mt-auto flex items-center justify-between pt-6 border-t border-slate-50">
+                  <div className="flex items-center gap-1.5 text-slate-500 font-medium text-sm">
+                    <MapPin className="w-4 h-4 text-indigo-500" />
+                    {service.location}
+                  </div>
+                  <div className="flex items-center text-indigo-600 font-bold text-sm opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
+                    Book Now →
+                  </div>
                 </div>
               </div>
             );

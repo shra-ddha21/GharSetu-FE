@@ -28,15 +28,17 @@ const SocialSection = () => {
         <h3 className="text-xl font-bold text-slate-900 mb-8">Connect With Us</h3>
         <div className="flex justify-center gap-6">
           {[
-            { icon: TwitterIcon, label: 'Twitter', hoverColor: 'hover:text-sky-500 hover:border-sky-200 hover:shadow-sky-100' },
-            { icon: LinkedinIcon, label: 'LinkedIn', hoverColor: 'hover:text-blue-700 hover:border-blue-200 hover:shadow-blue-100' },
-            { icon: GithubIcon, label: 'GitHub', hoverColor: 'hover:text-slate-900 hover:border-slate-300 hover:shadow-slate-200' }
+            { icon: TwitterIcon, label: 'Twitter', url: 'https://twitter.com', hoverColor: 'hover:text-sky-500 hover:border-sky-200 hover:shadow-sky-100' },
+            { icon: LinkedinIcon, label: 'LinkedIn', url: 'https://linkedin.com', hoverColor: 'hover:text-blue-700 hover:border-blue-200 hover:shadow-blue-100' },
+            { icon: GithubIcon, label: 'GitHub', url: 'https://github.com', hoverColor: 'hover:text-slate-900 hover:border-slate-300 hover:shadow-slate-200' }
           ].map((social, idx) => {
             const Icon = social.icon;
             return (
               <a 
                 key={idx}
-                href="#"
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
                 className={`group w-14 h-14 bg-white rounded-full flex items-center justify-center text-slate-400 shadow-sm border border-slate-200 transform hover:-translate-y-1 hover:shadow-md transition-all duration-300 ${social.hoverColor}`}
                 aria-label={social.label}
               >

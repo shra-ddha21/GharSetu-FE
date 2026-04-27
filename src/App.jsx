@@ -1,3 +1,4 @@
+import { Toaster } from 'react-hot-toast';
 import {
   BrowserRouter,
   Routes,
@@ -15,6 +16,10 @@ import { LogOut, Home, Users, Briefcase, FileText, Search } from "lucide-react";
 // Page Imports
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import VerifyOTP from "./pages/auth/VerifyOTP";
+import ResetPassword from "./pages/auth/ResetPassword";
+import ResetSuccess from "./pages/auth/ResetSuccess";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminProviders from "./pages/admin/Providers";
 import AdminRequests from "./pages/admin/Requests";
@@ -27,6 +32,7 @@ import ProviderAssigned from "./pages/provider/Assigned";
 import GuestHomepage from "./pages/guest/GuestHomepage";
 import ContactPage from "./pages/guest/ContactPage";
 import AboutPage from "./pages/guest/AboutPage";
+import ServicesPage from "./pages/guest/ServicesPage";
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -113,16 +119,53 @@ const SidebarLayout = ({ links }) => {
   );
 };
 
+
 export default function App() {
   return (
     <AuthProvider>
+      <Toaster 
+        position="top-center" 
+        reverseOrder={false} 
+        toastOptions={{
+          duration: 4000,
+          style: {
+            padding: '24px 32px',
+            color: '#1e293b',
+            background: '#ffffff',
+            borderRadius: '2rem',
+            fontSize: '1.125rem',
+            fontWeight: '700',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
+            border: '1px solid #f1f5f9',
+            maxWidth: '600px',
+            width: 'max-content'
+          },
+          success: {
+            iconTheme: {
+              primary: '#4f46e5',
+              secondary: '#ffffff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#ffffff',
+            },
+          },
+        }}
+      />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify-otp" element={<VerifyOTP />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/password-reset-success" element={<ResetSuccess />} />
           <Route path="/home" element={<GuestHomepage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/services" element={<ServicesPage />} />
           <Route path="/contact" element={<ContactPage />} />
 
           {/* Admin Routes */}
