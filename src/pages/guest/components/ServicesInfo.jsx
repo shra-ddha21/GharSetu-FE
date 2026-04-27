@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const ServicesInfo = () => {
   return (
-    <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col lg:flex-row items-center gap-16">
         
         {/* Left Side: Text */}

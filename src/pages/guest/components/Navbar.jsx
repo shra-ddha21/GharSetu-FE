@@ -1,8 +1,11 @@
 import React from 'react';
-import { Shield, Home, Menu } from 'lucide-react';
+import { Shield, Home, Menu, LogOut, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const Navbar = () => {
+  const { user, logout } = useAuth();
+  
   const navLinks = [
     { name: 'Home', path: '/home' },
     { name: 'About', path: '/about' },
@@ -12,7 +15,7 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md shadow-sm border-b border-slate-100 transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
 
           {/* Left section: Logo and Greeting */}
@@ -23,9 +26,6 @@ const Navbar = () => {
               </div>
               <span className="text-2xl font-bold tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">GharSetu</span>
             </Link>
-            <div className="hidden md:flex items-center pl-6 border-l border-slate-200">
-              <span className="text-sm font-medium text-slate-500">Hi, <span className="text-slate-800 font-semibold">Guest</span> &mdash; Welcome!</span>
-            </div>
           </div>
 
           {/* Right section: Navigation Links */}
@@ -39,9 +39,29 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            <Link to="/login" className="px-5 py-2.5 ml-2 bg-slate-900 hover:bg-indigo-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-200 hover:shadow-indigo-500/30 transform hover:-translate-y-0.5 transition-all duration-300">
-              Sign In
-            </Link>
+            
+            {user ? (
+              <div className="flex items-center gap-4 ml-2">
+                <Link 
+                  to={`/${user.role}/dashboard`} 
+                  className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 text-sm font-bold rounded-xl border border-indigo-100 hover:bg-indigo-100 transition-all"
+                >
+                  <User className="w-4 h-4" />
+                  Dashboard
+                </Link>
+                <button 
+                  onClick={logout}
+                  className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                  title="Logout"
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className="px-5 py-2.5 ml-2 bg-slate-900 hover:bg-indigo-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-200 hover:shadow-indigo-500/30 transform hover:-translate-y-0.5 transition-all duration-300">
+                Sign In
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}

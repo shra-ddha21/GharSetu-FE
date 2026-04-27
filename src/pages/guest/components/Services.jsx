@@ -1,5 +1,7 @@
 import React from 'react';
 import { Sparkles, Wrench, Zap, PaintRoller, Hammer, Truck, MapPin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const servicesList = [
   {
@@ -52,29 +54,38 @@ const servicesList = [
   }
 ];
 
-const Services = ({ searchQuery = '', locationQuery = '' }) => {
+const Services = ({ searchQuery = '', locationQuery = '', isLoggedIn = false }) => {
+  const navigate = useNavigate();
+
+  const handleBookNow = (serviceTitle) => {
+    if (!isLoggedIn) {
+      toast('Please login to book a service', { icon: '🔑' });
+      navigate('/login');
+    } else {
+      navigate('/user/book', { state: { service: serviceTitle } });
+    }
+  };
+
   const filteredServices = servicesList.filter(service => {
-    const sQuery = searchQuery.toLowerCase();
-    const lQuery = locationQuery.toLowerCase();
+    const sQuery = (searchQuery || '').toLowerCase();
+    const lQuery = (locationQuery || '').toLowerCase();
     
-    const matchesSearch = service.title.toLowerCase().includes(sQuery) || 
-                         service.description.toLowerCase().includes(sQuery) ||
-                         service.location.toLowerCase().includes(sQuery);
-                         
-    const matchesLocation = service.location.toLowerCase().includes(lQuery);
-    
-    return matchesSearch && matchesLocation;
+    return (
+      (service.title.toLowerCase().includes(sQuery) || 
+       service.description.toLowerCase().includes(sQuery) ||
+       service.location.toLowerCase().includes(sQuery)) &&
+      (service.location.toLowerCase().includes(lQuery))
+    );
   });
 
   return (
     <section id="services" className="py-20 bg-slate-50 relative overflow-hidden">
-      {/* Background decorations */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-indigo-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-sm font-bold tracking-widest text-indigo-600 uppercase mb-3">What We Offer</h2>
           <h3 className="text-4xl font-extrabold text-slate-900 sm:text-5xl">Our Essential Services</h3>
@@ -91,6 +102,7 @@ const Services = ({ searchQuery = '', locationQuery = '' }) => {
             return (
               <div 
                 key={index} 
+                onClick={() => handleBookNow(service.title)}
                 className="group bg-white rounded-[2rem] p-8 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-slate-100 cursor-pointer flex flex-col"
               >
                 <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-colors duration-300 ${service.color} ${service.hover}`}>

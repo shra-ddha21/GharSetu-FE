@@ -167,6 +167,8 @@ export default function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/user/book" element={<div className="min-h-screen bg-slate-50 flex items-center justify-center font-bold text-slate-400">Booking Page Coming Soon...</div>} />
+          <Route path="/blank" element={<div className="min-h-screen bg-white"></div>} />
 
           {/* Admin Routes */}
           <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
