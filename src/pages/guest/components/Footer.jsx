@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home, MessageCircle, Share2, Globe, Mail, Send } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -31,11 +32,16 @@ const Footer = () => {
           <div>
             <h4 className="text-white font-bold text-lg mb-6">Quick Links</h4>
             <ul className="space-y-4">
-              {['Home', 'Services', 'Pricing', 'Testimonials', 'Contact Us'].map((link) => (
-                <li key={link}>
-                  <a href="#" className="text-slate-400 hover:text-indigo-400 transition-colors text-sm font-medium flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full bg-indigo-600"></span> {link}
-                  </a>
+              {[
+                { name: 'Home', path: '/home' },
+                { name: 'About', path: '/about' },
+                { name: 'Services', path: '/services' },
+                { name: 'Contact Us', path: '/contact' }
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link to={link.path} className="text-slate-400 hover:text-indigo-400 transition-colors text-sm font-medium flex items-center gap-2">
+                    <span className="w-1 h-1 rounded-full bg-indigo-600"></span> {link.name}
+                  </Link>
                 </li>
               ))}
             </ul>

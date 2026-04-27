@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const DetailedInfo = () => {
   return (
@@ -24,9 +25,9 @@ const DetailedInfo = () => {
               </p>
             </div>
             
-            <button className="px-8 py-4 bg-slate-900 text-white font-semibold rounded-2xl hover:bg-indigo-600 shadow-xl shadow-slate-900/10 hover:shadow-indigo-500/30 transform hover:-translate-y-1 transition-all duration-300">
+            <Link to="/contact" className="inline-block px-8 py-4 bg-slate-900 text-white font-semibold rounded-2xl hover:bg-indigo-600 shadow-xl shadow-slate-900/10 hover:shadow-indigo-500/30 transform hover:-translate-y-1 transition-all duration-300">
               Join Our Network
-            </button>
+            </Link>
           </div>
           
           {/* Right Image/Illustration Column */}

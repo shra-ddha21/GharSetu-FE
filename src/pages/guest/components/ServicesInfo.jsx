@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const ServicesInfo = () => {
   return (
@@ -27,9 +28,9 @@ const ServicesInfo = () => {
             ))}
           </ul>
           
-          <button className="mt-4 px-8 py-4 bg-slate-900 text-white font-semibold rounded-2xl hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
+          <Link to="/about" className="inline-block mt-4 px-8 py-4 bg-slate-900 text-white font-semibold rounded-2xl hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
             Read Our Story
-          </button>
+          </Link>
         </div>
 
         {/* Right Side: Overlapping Circular Design Elements */}

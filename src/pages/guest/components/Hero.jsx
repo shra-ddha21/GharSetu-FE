@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import heroBannerImg from '../../../assets/images/hero_banner.png';
 
 const Hero = () => {
@@ -21,15 +22,15 @@ const Hero = () => {
         </div>
         
         <div className="flex-shrink-0 flex flex-col sm:flex-row items-center gap-4">
-          <button className="group relative px-8 py-4 bg-indigo-600 text-white font-semibold rounded-2xl overflow-hidden shadow-xl shadow-indigo-600/20 hover:shadow-indigo-600/40 transform hover:-translate-y-1 transition-all duration-300">
+          <Link to="/services" className="group relative px-8 py-4 bg-indigo-600 text-white font-semibold rounded-2xl overflow-hidden shadow-xl shadow-indigo-600/20 hover:shadow-indigo-600/40 transform hover:-translate-y-1 transition-all duration-300">
             <div className="absolute inset-0 w-1/4 bg-white/20 skew-x-12 -translate-x-full group-hover:translate-x-[400%] transition-transform duration-700"></div>
             <span className="flex items-center gap-2 relative z-10">
-              Get Started <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              Explore Services <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </span>
-          </button>
-          <button className="px-8 py-4 bg-white text-slate-700 font-semibold rounded-2xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-sm transition-all duration-300">
-            Learn More
-          </button>
+          </Link>
+          <Link to="/about" className="px-8 py-4 bg-white text-slate-700 font-semibold rounded-2xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-sm transition-all duration-300">
+            Learn Our Story
+          </Link>
         </div>
       </div>
 
