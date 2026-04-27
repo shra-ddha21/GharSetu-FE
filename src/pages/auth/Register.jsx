@@ -1,12 +1,15 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { api } from '../../contexts/AuthContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { CloudCog, X, Loader2 } from 'lucide-react';
+import { CloudCog, X, Loader2, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Register() {
-  const [role, setRole] = useState('user');
+  const location = useLocation();
+  const preSelectedRole = location.state?.selectedRole;
+  
+  const [role, setRole] = useState(preSelectedRole || 'user');
   const [formData, setFormData] = useState({
     name: '', 
     email: '', 
@@ -20,6 +23,7 @@ export default function Register() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -63,7 +67,7 @@ export default function Register() {
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-50 rounded-full blur-3xl opacity-50"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-50 rounded-full blur-3xl opacity-50"></div>
 
-      <div className="w-full max-w-6xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row relative z-10 min-h-[700px] border border-slate-200">
+      <div className="w-full max-w-3xl bg-white rounded-[1.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row relative z-10 min-h-[500px] border border-slate-200">
         {/* Close Button */}
         <Link 
           to="/home" 
@@ -73,15 +77,15 @@ export default function Register() {
         </Link>
 
         {/* Left Section: Branding */}
-        <div className="md:w-5/12 bg-indigo-600 text-white p-20 flex flex-col justify-start items-start text-left relative overflow-hidden pt-32">
+        <div className="md:w-5/12 bg-indigo-600 text-white p-6 md:p-10 flex flex-col justify-start items-start text-left relative overflow-hidden pt-10 md:pt-16">
           <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
             <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] bg-white rounded-full blur-3xl"></div>
           </div>
           <div className="relative z-10 flex flex-col items-start w-full max-w-md">
-            <h1 className="text-5xl font-extrabold mb-4 tracking-tight">GharSetu</h1>
-            <div className="w-full h-1.5 bg-white/30 rounded-full mb-8"></div>
-            <p className="text-xl text-indigo-100 leading-snug font-medium">
-              Join thousands of households and verified service providers. Bridge the gap with quality.
+            <h1 className="text-3xl font-extrabold mb-3 tracking-tight">GharSetu</h1>
+            <div className="w-full h-1 bg-white/30 rounded-full mb-6"></div>
+            <p className="text-lg text-indigo-100 leading-snug font-medium">
+              Join our network of verified professionals.
             </p>
           </div>
           <div className="absolute bottom-12 flex gap-2">
@@ -92,15 +96,15 @@ export default function Register() {
         </div>
 
         {/* Right Section: Form */}
-        <div className="flex-1 p-8 md:p-20 md:pt-32 flex items-start justify-center bg-white overflow-y-auto">
-          <div className="w-full max-w-2xl">
+        <div className="flex-1 p-6 md:p-8 md:pt-12 flex items-start justify-center bg-white overflow-y-auto">
+          <div className="w-full max-w-lg">
             <div className="mb-8">
-               <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Create an Account</h2>
-               <p className="text-sm text-slate-500 mt-2 font-medium">Join GharSetu today and start exploring.</p>
+               <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Create Account</h2>
+               <p className="text-xs text-slate-500 mt-1 font-medium">Join GharSetu today and start exploring.</p>
             </div>
 
             <div className="flex bg-slate-100 p-1 rounded-xl mb-8">
-              {['user', 'provider'].map((r) => (
+              {(preSelectedRole ? [preSelectedRole] : ['user', 'provider']).map((r) => (
                 <button
                   key={r}
                   type="button"
@@ -233,17 +237,26 @@ export default function Register() {
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-700 mb-1 ml-1">Password</label>
-                    <input 
-                      name="password" 
-                      type="password" 
-                      required 
-                      placeholder="••••••••"
-                      className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-sm" 
-                      value={formData.password}
-                      onChange={handleChange} 
-                      minLength={8} 
-                      autoComplete="new-password"
-                    />
+                    <div className="relative">
+                      <input 
+                        name="password" 
+                        type={showPassword ? "text" : "password"} 
+                        required 
+                        placeholder="••••••••"
+                        className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-sm pr-12" 
+                        value={formData.password}
+                        onChange={handleChange} 
+                        minLength={8} 
+                        autoComplete="new-password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
                   </div>
                 </div>
                 

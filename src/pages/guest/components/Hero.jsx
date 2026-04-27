@@ -5,7 +5,7 @@ import heroBannerImg from '../../../assets/images/hero_banner.png';
 
 const Hero = () => {
   return (
-    <section id="home" className="pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <section id="home" className="pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
       {/* Top Section: Text & CTA */}
       <div className="flex flex-col lg:flex-row items-center justify-between gap-12 mb-16">
         <div className="flex-1 text-center lg:text-left space-y-6">

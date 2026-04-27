@@ -24,7 +24,7 @@ const GithubIcon = ({ className }) => (
 const SocialSection = () => {
   return (
     <section className="py-16 bg-slate-50 border-t border-slate-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h3 className="text-xl font-bold text-slate-900 mb-8">Connect With Us</h3>
         <div className="flex justify-center gap-6">
           {[
