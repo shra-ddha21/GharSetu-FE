@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { X, Loader2, Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { api } from '../../contexts/AuthContext';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -13,14 +14,13 @@ export default function ForgotPassword() {
     setLoading(true);
     
     try {
-      // Simulate API call for sending OTP
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await api.post('/forgot-password', { email });
       
       toast.success('OTP sent to your email!');
       // Navigate to verify-otp and pass the email in state
       navigate('/verify-otp', { state: { email } });
     } catch (err) {
-      toast.error('Failed to send OTP. Please try again.');
+      toast.error(err.response?.data?.message || 'Failed to send OTP. Please try again.');
     } finally {
       setLoading(false);
     }
