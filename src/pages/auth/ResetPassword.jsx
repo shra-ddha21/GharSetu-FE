@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { X, Loader2, Lock, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { api } from '../../contexts/AuthContext';
 
 export default function ResetPassword() {
   const [password, setPassword] = useState('');
@@ -12,6 +13,14 @@ export default function ResetPassword() {
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email;
+  const resetToken = location.state?.resetToken;
+
+  // Redirect guard — if no resetToken, go back to forgot-password
+  useEffect(() => {
+    if (!resetToken) {
+      navigate('/forgot-password', { replace: true });
+    }
+  }, [resetToken, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,13 +35,12 @@ export default function ResetPassword() {
 
     setLoading(true);
     try {
-      // Simulate API call for resetting password
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await api.post('/reset-password', { resetToken, newPassword: password });
       
       toast.success('Password reset successfully!');
       navigate('/password-reset-success');
     } catch (err) {
-      toast.error('Failed to reset password. Please try again.');
+      toast.error(err.response?.data?.message || 'Failed to reset password. Please try again.');
     } finally {
       setLoading(false);
     }

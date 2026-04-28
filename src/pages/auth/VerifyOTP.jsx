@@ -2,14 +2,33 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { X, Loader2, KeyRound } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { api } from '../../contexts/AuthContext';
 
 export default function VerifyOTP() {
   const [otp, setOtp] = useState(['', '', '', '']);
   const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState(30);
+  const [resending, setResending] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const email = location.state?.email || 'your email';
+  const email = location.state?.email;
   const inputs = useRef([]);
+
+  // Redirect guard — if no email in state, go back to forgot-password
+  useEffect(() => {
+    if (!email) {
+      navigate('/forgot-password', { replace: true });
+    }
+  }, [email, navigate]);
+
+  // 30-second countdown timer
+  useEffect(() => {
+    if (timer <= 0) return;
+    const interval = setInterval(() => {
+      setTimer(prev => prev - 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [timer]);
 
   const handleChange = (element, index) => {
     if (isNaN(element.value)) return false;
@@ -38,15 +57,30 @@ export default function VerifyOTP() {
 
     setLoading(true);
     try {
-      // Simulate API call for verifying OTP
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const res = await api.post('/verify-otp', { email, otp: otpValue });
+      const { resetToken } = res.data;
       
       toast.success('OTP Verified!');
-      navigate('/reset-password', { state: { email, otp: otpValue } });
+      navigate('/reset-password', { state: { email, resetToken } });
     } catch (err) {
-      toast.error('Invalid OTP. Please try again.');
+      toast.error(err.response?.data?.message || 'Invalid OTP. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    setResending(true);
+    try {
+      await api.post('/forgot-password', { email });
+      setTimer(30);
+      setOtp(['', '', '', '']);
+      if (inputs.current[0]) inputs.current[0].focus();
+      toast.success('New OTP sent!');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to resend OTP.');
+    } finally {
+      setResending(false);
     }
   };
 
@@ -100,10 +134,24 @@ export default function VerifyOTP() {
                 ))}
               </div>
 
+              {/* Timer Display */}
+              <div className="flex justify-center md:justify-start">
+                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold ${
+                  timer > 0 
+                    ? 'bg-indigo-50 text-indigo-600' 
+                    : 'bg-red-50 text-red-500'
+                }`}>
+                  <div className={`w-2 h-2 rounded-full ${timer > 0 ? 'bg-indigo-500 animate-pulse' : 'bg-red-400'}`}></div>
+                  {timer > 0 
+                    ? `00:${timer.toString().padStart(2, '0')} remaining` 
+                    : 'OTP Expired'}
+                </div>
+              </div>
+
               <div className="pt-4">
                 <button 
                   type="submit" 
-                  disabled={loading}
+                  disabled={loading || timer <= 0}
                   className="w-full py-4 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-100 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {loading ? (
@@ -118,7 +166,14 @@ export default function VerifyOTP() {
               <div className="text-center md:text-left space-y-4">
                 <p className="text-sm text-slate-500 font-medium">
                   Didn't receive the code?{' '}
-                  <button type="button" className="text-indigo-600 font-bold hover:underline">Resend OTP</button>
+                  <button 
+                    type="button" 
+                    className="text-indigo-600 font-bold hover:underline disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
+                    onClick={handleResend}
+                    disabled={timer > 0 || resending}
+                  >
+                    {resending ? 'Sending...' : timer > 0 ? `Resend in ${timer}s` : 'Resend OTP'}
+                  </button>
                 </p>
                 <Link to="/forgot-password" title="Go back to email entry" className="inline-block text-sm font-bold text-slate-400 hover:text-indigo-600 transition-colors">
                   ← Back to Email
