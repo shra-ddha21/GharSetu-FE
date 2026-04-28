@@ -3,7 +3,7 @@ import heroBannerImg from '../../../../assets/images/hero_banner.png';
 
 const AboutHero = () => {
   return (
-    <section className="pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden">
+    <section className="pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto relative overflow-hidden">
       <div className="flex flex-col lg:flex-row items-center justify-between gap-12 mb-10">
         <div className="flex-1 text-center lg:text-left space-y-6">
           <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-700 text-sm font-semibold tracking-wide uppercase mb-2 border border-indigo-100">

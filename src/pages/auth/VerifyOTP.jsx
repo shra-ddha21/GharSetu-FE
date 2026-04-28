@@ -89,31 +89,31 @@ export default function VerifyOTP() {
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-50 rounded-full blur-3xl opacity-50"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-50 rounded-full blur-3xl opacity-50"></div>
 
-      <div className="w-full max-w-6xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row relative z-10 min-h-[600px] border border-slate-200">
+      <div className="w-full max-w-2xl bg-white rounded-[1.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row relative z-10 min-h-[400px] border border-slate-200">
         <Link to="/login" className="absolute top-6 right-6 z-30 p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all duration-300 group">
           <X className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
         </Link>
 
         {/* Branding Section */}
-        <div className="md:w-5/12 bg-indigo-600 text-white p-20 flex flex-col justify-start items-start text-left relative overflow-hidden pt-32">
+        <div className="md:w-5/12 bg-indigo-600 text-white p-6 md:p-10 flex flex-col justify-start items-start text-left relative overflow-hidden pt-10 md:pt-16">
           <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
             <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] bg-white rounded-full blur-3xl"></div>
           </div>
           <div className="relative z-10 flex flex-col items-start w-full max-w-md">
-            <h1 className="text-5xl font-extrabold mb-4 tracking-tight">GharSetu</h1>
-            <div className="w-full h-1.5 bg-white/30 rounded-full mb-8"></div>
-            <p className="text-xl text-indigo-100 leading-snug font-medium">
-              We've sent a verification code to your email.
+            <h1 className="text-3xl font-extrabold mb-3 tracking-tight">GharSetu</h1>
+            <div className="w-full h-1 bg-white/30 rounded-full mb-6"></div>
+            <p className="text-lg text-indigo-100 leading-snug font-medium">
+              Verify your account.
             </p>
           </div>
         </div>
 
         {/* Form Section */}
-        <div className="flex-1 p-8 md:p-20 md:pt-32 flex items-start justify-center bg-white overflow-y-auto">
+        <div className="flex-1 p-6 md:p-10 md:pt-16 flex items-start justify-center bg-white overflow-y-auto">
           <div className="w-full max-w-md text-center md:text-left">
             <div className="mb-10">
-               <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Verify Account</h2>
-               <p className="text-sm text-slate-500 mt-2 font-medium">
+               <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Verify Account</h2>
+               <p className="text-xs text-slate-500 mt-1 font-medium">
                  Enter the 4-digit code we sent to <span className="text-indigo-600 font-bold">{email}</span>
                </p>
             </div>
