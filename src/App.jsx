@@ -10,8 +10,9 @@ import {
 } from "react-router-dom";
 // import { AuthProvider, useAuth } from './contexts/AuthContext.jsx';
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { BookingProvider } from "./contexts/BookingContext";
 import { cn } from "./lib/utils.jsx";
-import { LogOut, Home, Users, Briefcase, FileText, Search } from "lucide-react";
+import { LogOut, Home, Users, Briefcase, FileText, Search, User } from "lucide-react";
 
 // Page Imports
 import Login from "./pages/auth/Login";
@@ -23,12 +24,17 @@ import ResetSuccess from "./pages/auth/ResetSuccess";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminProviders from "./pages/admin/Providers";
 import AdminRequests from "./pages/admin/Requests";
+import AdminProfile from "./pages/admin/Profile";
 import UserDashboard from "./pages/user/Dashboard";
+import UserProfile from "./pages/user/Profile";
 import UserSearch from "./pages/user/Search";
 import UserRequests from "./pages/user/Requests";
+import UserProviderProfile from "./pages/user/ProviderProfile";
+import CreateRequest from "./pages/user/CreateRequest";
 import ProviderDashboard from "./pages/provider/Dashboard";
 import ProviderIncoming from "./pages/provider/Incoming";
 import ProviderAssigned from "./pages/provider/Assigned";
+import ProviderProfile from "./pages/provider/Profile";
 import GuestHomepage from "./pages/guest/GuestHomepage";
 import ContactPage from "./pages/guest/ContactPage";
 import AboutPage from "./pages/guest/AboutPage";
@@ -83,7 +89,12 @@ const SidebarLayout = ({ links }) => {
                     : "text-slate-500 hover:bg-slate-50 font-medium",
                 )}
               >
-                <Icon className="w-5 h-5" />
+                <div className="relative">
+                  <Icon className="w-5 h-5" />
+                  {link.id === 'provider-profile' && user?.role === 'provider' && (!user.experience || !user.description || !user.portfolioImages || user.portfolioImages.length === 0) && (
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
+                  )}
+                </div>
                 {link.label}
               </Link>
             );
@@ -155,6 +166,7 @@ export default function App() {
         }}
       />
       <BrowserRouter>
+        <BookingProvider>
         <Routes>
           <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/login" element={<Login />} />
@@ -167,7 +179,7 @@ export default function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/user/book" element={<div className="min-h-screen bg-slate-50 flex items-center justify-center font-bold text-slate-400">Booking Page Coming Soon...</div>} />
+          {/* <Route path="/user/book" element={<div className="min-h-screen bg-slate-50 flex items-center justify-center font-bold text-slate-400">Booking Page Coming Soon...</div>} /> */}
           <Route path="/blank" element={<div className="min-h-screen bg-white"></div>} />
 
           {/* Admin Routes */}
@@ -191,6 +203,11 @@ export default function App() {
                       href: "/admin/requests",
                       icon: FileText,
                     },
+                    {
+                      label: "Profile",
+                      href: "/admin/profile",
+                      icon: User,
+                    },
                   ]}
                 />
               }
@@ -198,6 +215,7 @@ export default function App() {
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/providers" element={<AdminProviders />} />
               <Route path="/admin/requests" element={<AdminRequests />} />
+              <Route path="/admin/profile" element={<AdminProfile />} />
             </Route>
           </Route>
 
@@ -218,6 +236,11 @@ export default function App() {
                       href: "/user/requests",
                       icon: FileText,
                     },
+                    {
+                      label: "Profile",
+                      href: "/user/profile",
+                      icon: User,
+                    },
                   ]}
                 />
               }
@@ -225,6 +248,9 @@ export default function App() {
               <Route path="/user/dashboard" element={<UserDashboard />} />
               <Route path="/user/search" element={<UserSearch />} />
               <Route path="/user/requests" element={<UserRequests />} />
+              <Route path="/user/provider/:id" element={<UserProviderProfile />} />
+              <Route path="/user/book" element={<CreateRequest />} />
+              <Route path="/user/profile" element={<UserProfile />} />
             </Route>
           </Route>
 
@@ -249,6 +275,12 @@ export default function App() {
                       href: "/provider/assigned-requests",
                       icon: FileText,
                     },
+                    {
+                      id: "provider-profile",
+                      label: "Profile",
+                      href: "/provider/profile",
+                      icon: User,
+                    },
                   ]}
                 />
               }
@@ -265,9 +297,14 @@ export default function App() {
                 path="/provider/assigned-requests"
                 element={<ProviderAssigned />}
               />
+              <Route
+                path="/provider/profile"
+                element={<ProviderProfile />}
+              />
             </Route>
           </Route>
         </Routes>
+        </BookingProvider>
       </BrowserRouter>
     </AuthProvider>
   );
