@@ -113,19 +113,7 @@ const SidebarLayout = ({ links }) => {
             );
           })}
           
-          {/* Dynamic Profile Link */}
-          <Link
-            to={`/${user?.role}/profile`}
-            className={cn(
-              "p-3 rounded-xl flex items-center gap-3 transition-colors cursor-pointer",
-              location.pathname === `/${user?.role}/profile`
-                ? "bg-indigo-50 text-indigo-700 font-semibold"
-                : "text-slate-500 hover:bg-slate-50 font-medium",
-            )}
-          >
-            <User className="w-5 h-5" />
-            Profile
-          </Link>
+
         </nav>
 
         <div className="mt-auto">
