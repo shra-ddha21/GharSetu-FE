@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../contexts/AuthContext';
+import { Calendar, User, Clock, BellRing, CheckCircle, XCircle } from 'lucide-react';
 
 export default function Incoming() {
   const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchRequests = async () => {
     try {
@@ -10,6 +12,8 @@ export default function Incoming() {
       setRequests(data);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -20,7 +24,6 @@ export default function Incoming() {
   const handleRespond = async (id, action) => {
     try {
       await api.post(`/providers/requests/${id}/respond`, { action });
-      alert(`Request ${action}ed successfully.`);
       fetchRequests();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to respond');
@@ -28,39 +31,77 @@ export default function Incoming() {
     }
   };
 
+  if (loading) return <div className="p-8 text-center text-slate-500 font-medium">Loading incoming requests...</div>;
+
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Incoming Requests</h1>
-      <p className="text-gray-500 mb-8">First provider to accept a request gets assigned to it.</p>
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">Incoming Requests</h1>
+        <p className="text-slate-500 flex items-center gap-2">
+          <BellRing className="w-4 h-4 text-amber-500" />
+          The first provider to accept a request gets assigned to it. Act fast!
+        </p>
+      </div>
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         {requests.map(responseObj => (
-          <div key={responseObj._id} className="bg-white p-6 rounded-2xl border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-               <h3 className="font-semibold text-lg mb-1">{responseObj.requestId?.requirement}</h3>
-               <p className="text-sm text-gray-500">Customer: {responseObj.requestId?.userId?.name}</p>
-               <p className="text-sm text-gray-500">Preferred Date: {new Date(responseObj.requestId?.preferredDate).toLocaleDateString()}</p>
-               <p className="text-xs text-gray-400 mt-2">Received: {new Date(responseObj.createdAt).toLocaleString()}</p>
-            </div>
-            <div className="flex gap-3">
-               <button 
-                 onClick={() => handleRespond(responseObj.requestId._id, 'accept')}
-                 className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-               >
-                 Accept Job
-               </button>
-               <button 
-                 onClick={() => handleRespond(responseObj.requestId._id, 'reject')}
-                 className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors"
-               >
-                 Decline
-               </button>
+          <div key={responseObj._id} className="bg-white p-6 rounded-2xl border border-blue-100 shadow-md relative overflow-hidden transition-all hover:shadow-lg">
+            {/* Left Accent Bar */}
+            <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-500"></div>
+            
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 pl-2">
+              <div className="flex-1">
+                 <h3 className="font-bold text-lg text-slate-900 mb-4">{responseObj.requestId?.requirement}</h3>
+                 
+                 <div className="grid sm:grid-cols-2 gap-4">
+                   <div className="flex items-center gap-2.5 text-sm text-slate-700">
+                     <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
+                       <User className="w-4 h-4 text-slate-500" />
+                     </div>
+                     <div>
+                       <p className="text-xs text-slate-500 uppercase tracking-wider font-medium">Customer</p>
+                       <p className="font-medium">{responseObj.requestId?.userId?.name}</p>
+                     </div>
+                   </div>
+
+                   <div className="flex items-center gap-2.5 text-sm text-slate-700">
+                     <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+                       <Calendar className="w-4 h-4 text-blue-600" />
+                     </div>
+                     <div>
+                       <p className="text-xs text-slate-500 uppercase tracking-wider font-medium">Preferred Date</p>
+                       <p className="font-medium">{new Date(responseObj.requestId?.preferredDate).toLocaleDateString()}</p>
+                     </div>
+                   </div>
+                 </div>
+
+                 <p className="text-xs text-slate-400 mt-5 flex items-center gap-1.5">
+                   <Clock className="w-3.5 h-3.5" /> Received: {new Date(responseObj.createdAt).toLocaleString()}
+                 </p>
+              </div>
+
+              <div className="flex md:flex-col gap-3 min-w-[140px]">
+                 <button 
+                   onClick={() => handleRespond(responseObj.requestId._id, 'accept')}
+                   className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
+                 >
+                   <CheckCircle className="w-4 h-4" /> Accept Job
+                 </button>
+                 <button 
+                   onClick={() => handleRespond(responseObj.requestId._id, 'reject')}
+                   className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-xl transition-colors"
+                 >
+                   <XCircle className="w-4 h-4" /> Decline
+                 </button>
+              </div>
             </div>
           </div>
         ))}
-        {requests.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-2xl border text-gray-500">
-             No pending incoming requests right now.
+        {requests.length === 0 && !loading && (
+          <div className="text-center py-16 bg-slate-50 rounded-2xl border border-slate-200 border-dashed text-slate-500 flex flex-col items-center">
+             <BellRing className="w-12 h-12 text-slate-300 mb-3" />
+             <p className="text-lg font-medium text-slate-700">All caught up!</p>
+             <p className="text-sm mt-1">There are no pending incoming requests right now.</p>
           </div>
         )}
       </div>
