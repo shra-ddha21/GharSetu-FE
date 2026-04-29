@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import { MapPin, Mail, Phone, Briefcase, CheckCircle, XCircle, Clock, ShieldCheck, User } from 'lucide-react';
 
 export default function Providers() {
   const [providers, setProviders] = useState([]);
   const [statusFilter, setStatusFilter] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const fetchProviders = async () => {
+    setLoading(true);
     try {
       const { data } = await api.get('/admin/providers', { 
         params: statusFilter ? { status: statusFilter } : {} 
@@ -14,6 +17,8 @@ export default function Providers() {
       setProviders(data);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -31,64 +36,99 @@ export default function Providers() {
     }
   };
 
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'approved':
+        return <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full uppercase tracking-wider"><ShieldCheck className="w-3.5 h-3.5" /> Approved</span>;
+      case 'rejected':
+        return <span className="flex items-center gap-1.5 px-3 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded-full uppercase tracking-wider"><XCircle className="w-3.5 h-3.5" /> Rejected</span>;
+      case 'pending':
+        return <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full uppercase tracking-wider"><Clock className="w-3.5 h-3.5" /> Pending</span>;
+      default:
+        return <span className="px-3 py-1 bg-slate-100 text-slate-800 text-xs font-semibold rounded-full uppercase tracking-wider">{status}</span>;
+    }
+  };
+
   return (
     <div>
-      <div className="flex justify-between items-end mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
-           <h1 className="text-2xl font-bold text-gray-900 mb-1">Providers Management</h1>
-           <p className="text-gray-500 text-sm">Review and manage service providers.</p>
+           <h1 className="text-2xl font-bold text-slate-900 mb-2">Providers Management</h1>
+           <p className="text-slate-500 text-sm">Review, approve, and manage service providers on the platform.</p>
         </div>
-        <select 
-          className="border px-3 py-2 rounded-lg bg-white outline-none focus:ring-2 focus:ring-blue-500"
-          value={statusFilter}
-          onChange={e => setStatusFilter(e.target.value)}
-        >
-          <option value="">All Providers</option>
-          <option value="pending">Pending</option>
-          <option value="approved">Approved</option>
-          <option value="rejected">Rejected</option>
-        </select>
+        <div className="relative min-w-[200px]">
+          <select 
+            className="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-2.5 px-4 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-sm shadow-sm cursor-pointer"
+            value={statusFilter}
+            onChange={e => setStatusFilter(e.target.value)}
+          >
+            <option value="">All Providers</option>
+            <option value="pending">Pending Approval</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+          </div>
+        </div>
       </div>
 
-      <div className="grid gap-4">
-        {providers.map(p => (
-          <div key={p._id} className="bg-white p-6 rounded-2xl border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-               <div className="flex items-center gap-3 mb-1">
-                 <h3 className="font-semibold text-lg">{p.businessName}</h3>
-                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                   p.status === 'approved' ? 'bg-green-100 text-green-800' :
-                   p.status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
-                 }`}>
-                   {p.status}
-                 </span>
-               </div>
-               <p className="text-sm text-gray-500">{p.ownerName} • {p.email} • {p.phone}</p>
-               <p className="text-xs text-gray-400 mt-1">Service: {p.serviceType} | Location: {p.location}</p>
-            </div>
+      <div className="space-y-4">
+        {loading ? (
+          <div className="py-20 flex justify-center">
+            <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <>
+            {providers.map(p => (
+              <div key={p._id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all hover:shadow-md">
+                
+                {/* Info Section */}
+                <div className="flex-1 grid md:grid-cols-[1fr,auto] gap-6 items-start md:items-center">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-3 mb-2">
+                      <h3 className="font-bold text-lg text-slate-900">{p.businessName}</h3>
+                      {getStatusBadge(p.status)}
+                    </div>
+                    
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2 mt-4 text-sm text-slate-600">
+                      <p className="flex items-center gap-2"><User className="w-4 h-4 text-slate-400" /> <span className="font-medium text-slate-700">{p.ownerName}</span></p>
+                      <p className="flex items-center gap-2"><Mail className="w-4 h-4 text-slate-400" /> {p.email}</p>
+                      <p className="flex items-center gap-2"><Phone className="w-4 h-4 text-slate-400" /> {p.phone}</p>
+                      <p className="flex items-center gap-2"><Briefcase className="w-4 h-4 text-slate-400" /> <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md text-xs font-semibold">{p.serviceType || 'Not specified'}</span></p>
+                      <p className="flex items-center gap-2 sm:col-span-2 lg:col-span-1"><MapPin className="w-4 h-4 text-slate-400" /> {p.location}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Action Buttons */}
+                {p.status === 'pending' && (
+                  <div className="flex flex-row md:flex-col gap-2 min-w-[140px] pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-slate-100 md:pl-6">
+                    <button 
+                      onClick={() => handleAction(p._id, 'approve')}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
+                    >
+                      <CheckCircle className="w-4 h-4" /> Approve
+                    </button>
+                    <button 
+                      onClick={() => handleAction(p._id, 'reject')}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-xl transition-colors"
+                    >
+                      <XCircle className="w-4 h-4" /> Reject
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
             
-            {p.status === 'pending' && (
-              <div className="flex gap-2">
-                <button 
-                  onClick={() => handleAction(p._id, 'approve')}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
-                >
-                  Approve
-                </button>
-                <button 
-                  onClick={() => handleAction(p._id, 'reject')}
-                  className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-medium rounded-lg transition-colors"
-                >
-                  Reject
-                </button>
+            {providers.length === 0 && (
+              <div className="py-20 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-slate-500 flex flex-col items-center">
+                 <Briefcase className="w-12 h-12 text-slate-300 mb-3" />
+                 <p className="text-lg font-medium text-slate-700">No providers found</p>
+                 <p className="text-sm mt-1">Try changing your status filter.</p>
               </div>
             )}
-          </div>
-        ))}
-        {providers.length === 0 && (
-          <div className="p-8 text-center bg-white rounded-2xl border text-gray-500">
-             No providers found.
-          </div>
+          </>
         )}
       </div>
     </div>
