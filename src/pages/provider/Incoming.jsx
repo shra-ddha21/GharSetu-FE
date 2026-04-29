@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 export default function Incoming() {
   const [requests, setRequests] = useState([]);
@@ -20,10 +21,10 @@ export default function Incoming() {
   const handleRespond = async (id, action) => {
     try {
       await api.post(`/providers/requests/${id}/respond`, { action });
-      alert(`Request ${action}ed successfully.`);
+      toast.success(`Request ${action}ed successfully.`);
       fetchRequests();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to respond');
+      toast.error(err.response?.data?.message || 'Failed to respond');
       fetchRequests(); // refresh in case it was locked by another provider
     }
   };

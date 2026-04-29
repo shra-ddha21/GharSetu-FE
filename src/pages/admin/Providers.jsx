@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 export default function Providers() {
   const [providers, setProviders] = useState([]);
@@ -23,10 +24,10 @@ export default function Providers() {
   const handleAction = async (id, action) => {
     try {
       await api.patch(`/admin/providers/${id}/${action}`);
-      alert(`Provider ${action}d successfully`);
+      toast.success(`Provider ${action}d successfully`);
       fetchProviders();
     } catch (err) {
-      alert('Failed to update provider status');
+      toast.error('Failed to update provider status');
     }
   };
 
