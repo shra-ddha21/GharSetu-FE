@@ -8,11 +8,12 @@ import {
   Link,
   useLocation,
 } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
 // import { AuthProvider, useAuth } from './contexts/AuthContext.jsx';
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { BookingProvider } from "./contexts/BookingContext";
 import { cn } from "./lib/utils.jsx";
-import { LogOut, Home, Users, Briefcase, FileText, Search, User } from "lucide-react";
+import { LogOut, Home, Users, Briefcase, FileText, Search, User, ChevronDown } from "lucide-react";
 
 // Page Imports
 import Login from "./pages/auth/Login";
@@ -60,6 +61,18 @@ const ProtectedRoute = ({ allowedRoles }) => {
 const SidebarLayout = ({ links }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 flex font-sans text-slate-900 border-slate-200">
@@ -99,6 +112,20 @@ const SidebarLayout = ({ links }) => {
               </Link>
             );
           })}
+          
+          {/* Dynamic Profile Link */}
+          <Link
+            to={`/${user?.role}/profile`}
+            className={cn(
+              "p-3 rounded-xl flex items-center gap-3 transition-colors cursor-pointer",
+              location.pathname === `/${user?.role}/profile`
+                ? "bg-indigo-50 text-indigo-700 font-semibold"
+                : "text-slate-500 hover:bg-slate-50 font-medium",
+            )}
+          >
+            <User className="w-5 h-5" />
+            Profile
+          </Link>
         </nav>
 
         <div className="mt-auto">
@@ -121,8 +148,53 @@ const SidebarLayout = ({ links }) => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-auto flex flex-col p-8 gap-6">
-        <div className="max-w-6xl mx-auto w-full flex flex-col gap-6">
+      <main className="flex-1 overflow-auto flex flex-col relative bg-slate-50/50">
+        <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md px-8 py-4 flex justify-between items-center pt-6 pb-2">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
+              Welcome, <span className="text-indigo-600 capitalize">{user?.name || user?.businessName || user?.role}</span> 
+            </h2>
+            <p className="text-sm text-slate-500 mt-1 font-medium">
+              {user?.role === 'admin' && 'Overview of service ecosystem and provider status.'}
+              {user?.role === 'provider' && 'Manage your service requests and assignments.'}
+              {user?.role === 'user' && 'What do you need help with today?'}
+            </p>
+          </div>
+          
+          <div className="relative ml-2" ref={dropdownRef}>
+            <button 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center gap-2 p-1.5 pr-3 bg-white border border-slate-200 rounded-full hover:bg-slate-50 transition-all shadow-sm group"
+            >
+              <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm transform group-hover:scale-105 transition-transform">
+                {user?.name ? user.name[0].toUpperCase() : (user?.businessName ? user.businessName[0].toUpperCase() : (user?.role ? user.role[0].toUpperCase() : 'U'))}
+              </div>
+              <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                <Link 
+                  to="/home" 
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  <Home className="w-4 h-4" />
+                  Guest Home
+                </Link>
+                <button 
+                  onClick={() => { setIsDropdownOpen(false); logout(); }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </header>
+
+        <div className="p-8 max-w-6xl mx-auto w-full flex flex-col gap-6">
           <Outlet />
         </div>
       </main>

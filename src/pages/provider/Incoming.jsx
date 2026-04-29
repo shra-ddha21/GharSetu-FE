@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../contexts/AuthContext';
+import toast from 'react-hot-toast';
 import { Calendar, User, Clock, BellRing, CheckCircle, XCircle } from 'lucide-react';
 
 export default function Incoming() {
@@ -24,9 +25,10 @@ export default function Incoming() {
   const handleRespond = async (id, action) => {
     try {
       await api.post(`/providers/requests/${id}/respond`, { action });
+      toast.success(`Request ${action}ed successfully.`);
       fetchRequests();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to respond');
+      toast.error(err.response?.data?.message || 'Failed to respond');
       fetchRequests(); // refresh in case it was locked by another provider
     }
   };

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../contexts/AuthContext';
+import toast from 'react-hot-toast';
 import { MapPin, Phone, Mail, Briefcase, User, CheckCircle } from 'lucide-react';
 
 const getStatusStyle = (status) => {
@@ -34,32 +35,32 @@ export default function Requests() {
   const handleSendToProviders = async (id) => {
     try {
       await api.post(`/admin/requests/${id}/send`);
-      alert('Request sent to providers!');
+      toast.success('Request sent to providers!');
       fetchRequests();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to send request');
+      toast.error(err.response?.data?.message || 'Failed to send request');
     }
   };
 
   const handleScheduleMeeting = async (id) => {
     const data = meetingData[id];
-    if (!data?.date || !data?.link) return alert('Date and link required');
+    if (!data?.date || !data?.link) return toast.error('Date and link required');
     try {
       await api.post(`/admin/requests/${id}/schedule-meeting`, data);
-      alert('Meeting scheduled!');
+      toast.success('Meeting scheduled!');
       fetchRequests();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to schedule');
+      toast.error(err.response?.data?.message || 'Failed to schedule');
     }
   };
 
   const handleComplete = async (id) => {
     try {
       await api.patch(`/admin/requests/${id}/complete`);
-      alert('Request marked completed!');
+      toast.success('Request marked completed!');
       fetchRequests();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to complete');
+      toast.error(err.response?.data?.message || 'Failed to complete');
     }
   };
 

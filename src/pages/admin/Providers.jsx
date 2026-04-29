@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../contexts/AuthContext';
+import toast from 'react-hot-toast';
 import { MapPin, Mail, Phone, Briefcase, CheckCircle, XCircle, Clock, ShieldCheck, User } from 'lucide-react';
 
 export default function Providers() {
@@ -28,9 +29,10 @@ export default function Providers() {
   const handleAction = async (id, action) => {
     try {
       await api.patch(`/admin/providers/${id}/${action}`);
+      toast.success(`Provider ${action}d successfully`);
       fetchProviders();
     } catch (err) {
-      alert('Failed to update provider status');
+      toast.error('Failed to update provider status');
     }
   };
 
