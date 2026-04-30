@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Hide the default password reveal eye icon in Edge/IE to prevent duplicates with our custom icon */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
 @theme {
   --color-indigo-50: #ebfcff;
   --color-indigo-100: #d1f7ff;

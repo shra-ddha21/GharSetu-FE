@@ -21,14 +21,21 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      const endpoint = role === 'admin' ? '/admin/login' : role === 'provider' ? '/providers/login' : '/users/login';
+      let currentRole = role;
+      let endpoint = role === 'provider' ? '/providers/login' : '/users/login';
+      
+      if (email === 'admin@gharsetu.com' || email === 'admin') {
+        currentRole = 'admin';
+        endpoint = '/admin/login';
+      }
+
       const { data } = await api.post(endpoint, { email, password });
       
       const userData = data.user || data.admin || data.provider;
-      login(data.token, { ...userData, role });
+      login(data.token, { ...userData, role: currentRole });
       
       toast.success('Successfully logged in!');
-      navigate(`/${role}/dashboard`);
+      navigate(`/${currentRole}/dashboard`);
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
       toast.error(err.response?.data?.message || 'Login failed');
@@ -85,7 +92,7 @@ export default function Login() {
             </div>
 
             <div className="flex bg-slate-100 p-1 rounded-xl mb-6">
-              {['user', 'provider', 'admin'].map((r) => (
+              {['user', 'provider'].map((r) => (
                 <button
                   key={r}
                   type="button"
