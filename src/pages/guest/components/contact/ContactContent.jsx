@@ -3,6 +3,8 @@ import { MapPin, Mail, Phone, Send } from 'lucide-react';
 import ContactCard from './ContactCard';
 import InputField from './InputField';
 import Button from './Button';
+import { api } from '../../../../contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 const ContactContent = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,16 +15,29 @@ const ContactContent = () => {
     setIsVisible(true);
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    
+    try {
+      const formData = {
+        name: e.target.elements.name.value,
+        email: e.target.elements.email.value,
+        subject: e.target.elements.subject.value,
+        message: e.target.elements.message.value,
+      };
+      
+      await api.post('/contact', formData);
+      
       setIsSuccess(true);
       e.target.reset();
       setTimeout(() => setIsSuccess(false), 5000);
-    }, 1500);
+    } catch (error) {
+      console.error('Contact error:', error);
+      toast.error('Failed to send message. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
