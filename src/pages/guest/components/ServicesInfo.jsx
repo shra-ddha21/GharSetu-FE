@@ -1,9 +1,10 @@
 import React from 'react';
 import { CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const ServicesInfo = () => {
   return (
-    <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col lg:flex-row items-center gap-16">
         
         {/* Left Side: Text */}
@@ -27,9 +28,9 @@ const ServicesInfo = () => {
             ))}
           </ul>
           
-          <button className="mt-4 px-8 py-4 bg-slate-900 text-white font-semibold rounded-2xl hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
+          <Link to="/about" className="inline-block mt-4 px-8 py-4 bg-slate-900 text-white font-semibold rounded-2xl hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
             Read Our Story
-          </button>
+          </Link>
         </div>
 
         {/* Right Side: Overlapping Circular Design Elements */}

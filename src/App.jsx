@@ -1,3 +1,4 @@
+import { Toaster } from 'react-hot-toast';
 import {
   BrowserRouter,
   Routes,
@@ -7,25 +8,38 @@ import {
   Link,
   useLocation,
 } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
 // import { AuthProvider, useAuth } from './contexts/AuthContext.jsx';
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { BookingProvider } from "./contexts/BookingContext";
 import { cn } from "./lib/utils.jsx";
-import { LogOut, Home, Users, Briefcase, FileText, Search } from "lucide-react";
+import { LogOut, Home, Users, Briefcase, FileText, Search, User, ChevronDown } from "lucide-react";
 
 // Page Imports
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import VerifyOTP from "./pages/auth/VerifyOTP";
+import ResetPassword from "./pages/auth/ResetPassword";
+import ResetSuccess from "./pages/auth/ResetSuccess";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminProviders from "./pages/admin/Providers";
 import AdminRequests from "./pages/admin/Requests";
+import AdminProfile from "./pages/admin/Profile";
 import UserDashboard from "./pages/user/Dashboard";
+import UserProfile from "./pages/user/Profile";
 import UserSearch from "./pages/user/Search";
 import UserRequests from "./pages/user/Requests";
+import UserProviderProfile from "./pages/user/ProviderProfile";
+import CreateRequest from "./pages/user/CreateRequest";
 import ProviderDashboard from "./pages/provider/Dashboard";
 import ProviderIncoming from "./pages/provider/Incoming";
 import ProviderAssigned from "./pages/provider/Assigned";
+import ProviderProfile from "./pages/provider/Profile";
 import GuestHomepage from "./pages/guest/GuestHomepage";
 import ContactPage from "./pages/guest/ContactPage";
+import AboutPage from "./pages/guest/AboutPage";
+import ServicesPage from "./pages/guest/ServicesPage";
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -47,6 +61,18 @@ const ProtectedRoute = ({ allowedRoles }) => {
 const SidebarLayout = ({ links }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 flex font-sans text-slate-900 border-slate-200">
@@ -76,11 +102,18 @@ const SidebarLayout = ({ links }) => {
                     : "text-slate-500 hover:bg-slate-50 font-medium",
                 )}
               >
-                <Icon className="w-5 h-5" />
+                <div className="relative">
+                  <Icon className="w-5 h-5" />
+                  {link.id === 'provider-profile' && user?.role === 'provider' && (!user.experience || !user.description || !user.portfolioImages || user.portfolioImages.length === 0) && (
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
+                  )}
+                </div>
                 {link.label}
               </Link>
             );
           })}
+          
+
         </nav>
 
         <div className="mt-auto">
@@ -103,8 +136,53 @@ const SidebarLayout = ({ links }) => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-auto flex flex-col p-8 gap-6">
-        <div className="max-w-6xl mx-auto w-full flex flex-col gap-6">
+      <main className="flex-1 overflow-auto flex flex-col relative bg-slate-50/50">
+        <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md px-8 py-4 flex justify-between items-center pt-6 pb-2">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
+              Welcome, <span className="text-indigo-600 capitalize">{user?.name || user?.businessName || user?.role}</span> 
+            </h2>
+            <p className="text-sm text-slate-500 mt-1 font-medium">
+              {user?.role === 'admin' && 'Overview of service ecosystem and provider status.'}
+              {user?.role === 'provider' && 'Manage your service requests and assignments.'}
+              {user?.role === 'user' && 'What do you need help with today?'}
+            </p>
+          </div>
+          
+          <div className="relative ml-2" ref={dropdownRef}>
+            <button 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center gap-2 p-1.5 pr-3 bg-white border border-slate-200 rounded-full hover:bg-slate-50 transition-all shadow-sm group"
+            >
+              <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm transform group-hover:scale-105 transition-transform">
+                {user?.name ? user.name[0].toUpperCase() : (user?.businessName ? user.businessName[0].toUpperCase() : (user?.role ? user.role[0].toUpperCase() : 'U'))}
+              </div>
+              <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                <Link 
+                  to="/home" 
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  <Home className="w-4 h-4" />
+                  Guest Home
+                </Link>
+                <button 
+                  onClick={() => { setIsDropdownOpen(false); logout(); }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </header>
+
+        <div className="p-8 max-w-6xl mx-auto w-full flex flex-col gap-6">
           <Outlet />
         </div>
       </main>
@@ -112,16 +190,57 @@ const SidebarLayout = ({ links }) => {
   );
 };
 
+
 export default function App() {
   return (
     <AuthProvider>
+      <Toaster 
+        position="top-center" 
+        reverseOrder={false} 
+        toastOptions={{
+          duration: 4000,
+          style: {
+            padding: '24px 32px',
+            color: '#1e293b',
+            background: '#ffffff',
+            borderRadius: '2rem',
+            fontSize: '1.125rem',
+            fontWeight: '700',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
+            border: '1px solid #f1f5f9',
+            maxWidth: '600px',
+            width: 'max-content'
+          },
+          success: {
+            iconTheme: {
+              primary: '#4f46e5',
+              secondary: '#ffffff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#ffffff',
+            },
+          },
+        }}
+      />
       <BrowserRouter>
+        <BookingProvider>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify-otp" element={<VerifyOTP />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/password-reset-success" element={<ResetSuccess />} />
           <Route path="/home" element={<GuestHomepage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/services" element={<ServicesPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          {/* <Route path="/user/book" element={<div className="min-h-screen bg-slate-50 flex items-center justify-center font-bold text-slate-400">Booking Page Coming Soon...</div>} /> */}
+          <Route path="/blank" element={<div className="min-h-screen bg-white"></div>} />
 
           {/* Admin Routes */}
           <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
@@ -144,6 +263,11 @@ export default function App() {
                       href: "/admin/requests",
                       icon: FileText,
                     },
+                    {
+                      label: "Profile",
+                      href: "/admin/profile",
+                      icon: User,
+                    },
                   ]}
                 />
               }
@@ -151,6 +275,7 @@ export default function App() {
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/providers" element={<AdminProviders />} />
               <Route path="/admin/requests" element={<AdminRequests />} />
+              <Route path="/admin/profile" element={<AdminProfile />} />
             </Route>
           </Route>
 
@@ -171,6 +296,11 @@ export default function App() {
                       href: "/user/requests",
                       icon: FileText,
                     },
+                    {
+                      label: "Profile",
+                      href: "/user/profile",
+                      icon: User,
+                    },
                   ]}
                 />
               }
@@ -178,6 +308,9 @@ export default function App() {
               <Route path="/user/dashboard" element={<UserDashboard />} />
               <Route path="/user/search" element={<UserSearch />} />
               <Route path="/user/requests" element={<UserRequests />} />
+              <Route path="/user/provider/:id" element={<UserProviderProfile />} />
+              <Route path="/user/book" element={<CreateRequest />} />
+              <Route path="/user/profile" element={<UserProfile />} />
             </Route>
           </Route>
 
@@ -202,6 +335,12 @@ export default function App() {
                       href: "/provider/assigned-requests",
                       icon: FileText,
                     },
+                    {
+                      id: "provider-profile",
+                      label: "Profile",
+                      href: "/provider/profile",
+                      icon: User,
+                    },
                   ]}
                 />
               }
@@ -218,9 +357,14 @@ export default function App() {
                 path="/provider/assigned-requests"
                 element={<ProviderAssigned />}
               />
+              <Route
+                path="/provider/profile"
+                element={<ProviderProfile />}
+              />
             </Route>
           </Route>
         </Routes>
+        </BookingProvider>
       </BrowserRouter>
     </AuthProvider>
   );

@@ -7,14 +7,7 @@ export default function Dashboard() {
   
   return (
     <div className="flex flex-col gap-6 h-full">
-      <header className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Provider Dashboard</h1>
-          <p className="text-slate-500 text-sm">Welcome back, {user?.businessName}</p>
-        </div>
-      </header>
-
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-6 mt-2">
         <Link to="/provider/incoming-requests" className="block p-6 bg-white rounded-2xl border border-slate-100 hover:shadow-md transition-shadow group flex flex-col justify-center">
           <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-indigo-600 transition-colors">
              <Briefcase className="w-6 h-6 text-indigo-600 group-hover:text-white" />
