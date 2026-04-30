@@ -7,6 +7,11 @@ export default function Providers() {
   const [providers, setProviders] = useState([]);
   const [statusFilter, setStatusFilter] = useState('');
   const [loading, setLoading] = useState(true);
+  
+  // Rejection Modal State
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [rejectProviderId, setRejectProviderId] = useState(null);
+  const [rejectReason, setRejectReason] = useState('');
 
   const fetchProviders = async () => {
     setLoading(true);
@@ -26,14 +31,25 @@ export default function Providers() {
     fetchProviders();
   }, [statusFilter]);
 
-  const handleAction = async (id, action) => {
+  const handleAction = async (id, action, reason = '') => {
     try {
-      await api.patch(`/admin/providers/${id}/${action}`);
+      await api.patch(`/admin/providers/${id}/${action}`, { reason });
       toast.success(`Provider ${action}d successfully`);
       fetchProviders();
+      if (action === 'reject') {
+        setIsRejectModalOpen(false);
+        setRejectReason('');
+        setRejectProviderId(null);
+      }
     } catch (err) {
       toast.error('Failed to update provider status');
     }
+  };
+
+  const openRejectModal = (id) => {
+    setRejectProviderId(id);
+    setRejectReason('');
+    setIsRejectModalOpen(true);
   };
 
   const getStatusBadge = (status) => {
@@ -111,7 +127,7 @@ export default function Providers() {
                       <CheckCircle className="w-4 h-4" /> Approve
                     </button>
                     <button 
-                      onClick={() => handleAction(p._id, 'reject')}
+                      onClick={() => openRejectModal(p._id)}
                       className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-xl transition-colors"
                     >
                       <XCircle className="w-4 h-4" /> Reject
@@ -131,6 +147,40 @@ export default function Providers() {
           </>
         )}
       </div>
+
+      {/* Rejection Modal */}
+      {isRejectModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Reject Provider</h3>
+            <p className="text-sm text-slate-500 mb-4">Please provide a reason for rejecting this application. This will be sent to the provider via email.</p>
+            
+            <textarea
+              className="w-full border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
+              rows="4"
+              placeholder="e.g. Does not meet minimum experience requirements."
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+            ></textarea>
+            
+            <div className="flex justify-end gap-3 mt-6">
+              <button 
+                onClick={() => setIsRejectModalOpen(false)}
+                className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => handleAction(rejectProviderId, 'reject', rejectReason)}
+                disabled={!rejectReason.trim()}
+                className="px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+              >
+                Confirm Rejection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
