@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../../contexts/AuthContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { CloudCog, X, Loader2, Eye, EyeOff } from 'lucide-react';
+import { CloudCog, X, Loader2, Eye, EyeOff, Home } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Login() {
@@ -58,7 +58,12 @@ export default function Login() {
             <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] bg-white rounded-full blur-3xl"></div>
           </div>
           <div className="relative z-10 flex flex-col items-start w-full max-w-md">
-            <h1 className="text-3xl font-extrabold mb-3 tracking-tight">GharSetu</h1>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-white outline outline-4 outline-white/20 rounded-xl flex items-center justify-center text-indigo-600 transform hover:rotate-12 transition-transform duration-300">
+                <Home className="w-5 h-5" />
+              </div>
+              <h1 className="text-3xl font-extrabold tracking-tight">GharSetu</h1>
+            </div>
             <div className="w-full h-1 bg-white/30 rounded-full mb-6"></div>
             <p className="text-lg text-indigo-100 leading-snug font-medium">
               Your trusted bridge for home services.
