@@ -112,7 +112,7 @@ const SidebarLayout = ({ links }) => {
               </Link>
             );
           })}
-          
+
 
         </nav>
 
@@ -140,7 +140,7 @@ const SidebarLayout = ({ links }) => {
         <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md px-8 py-4 flex justify-between items-center pt-6 pb-2">
           <div>
             <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
-              Welcome, <span className="text-indigo-600 capitalize">{user?.name || user?.businessName || user?.role}</span> 
+              Welcome, <span className="text-indigo-600 capitalize">{user?.name || user?.businessName || user?.role}</span>
             </h2>
             <p className="text-sm text-slate-500 mt-1 font-medium">
               {user?.role === 'admin' && 'Overview of service ecosystem and provider status.'}
@@ -148,9 +148,9 @@ const SidebarLayout = ({ links }) => {
               {user?.role === 'user' && 'What do you need help with today?'}
             </p>
           </div>
-          
+
           <div className="relative ml-2" ref={dropdownRef}>
-            <button 
+            <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="flex items-center gap-2 p-1.5 pr-3 bg-white border border-slate-200 rounded-full hover:bg-slate-50 transition-all shadow-sm group"
             >
@@ -159,18 +159,18 @@ const SidebarLayout = ({ links }) => {
               </div>
               <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
-            
+
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                <Link 
-                  to="/home" 
+                <Link
+                  to="/home"
                   className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
                   onClick={() => setIsDropdownOpen(false)}
                 >
                   <Home className="w-4 h-4" />
                   Guest Home
                 </Link>
-                <button 
+                <button
                   onClick={() => { setIsDropdownOpen(false); logout(); }}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
                 >
@@ -194,9 +194,9 @@ const SidebarLayout = ({ links }) => {
 export default function App() {
   return (
     <AuthProvider>
-      <Toaster 
-        position="top-center" 
-        reverseOrder={false} 
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
         toastOptions={{
           duration: 4000,
           style: {
@@ -227,143 +227,143 @@ export default function App() {
       />
       <BrowserRouter>
         <BookingProvider>
-        <Routes>
-          <Route path="/" element={<Navigate to="/home" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/verify-otp" element={<VerifyOTP />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/password-reset-success" element={<ResetSuccess />} />
-          <Route path="/home" element={<GuestHomepage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/services" element={<ServicesPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          {/* <Route path="/user/book" element={<div className="min-h-screen bg-slate-50 flex items-center justify-center font-bold text-slate-400">Booking Page Coming Soon...</div>} /> */}
-          <Route path="/blank" element={<div className="min-h-screen bg-white"></div>} />
+          <Routes>
+            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/verify-otp" element={<VerifyOTP />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/password-reset-success" element={<ResetSuccess />} />
+            <Route path="/home" element={<GuestHomepage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            {/* <Route path="/user/book" element={<div className="min-h-screen bg-slate-50 flex items-center justify-center font-bold text-slate-400">Booking Page Coming Soon...</div>} /> */}
+            <Route path="/blank" element={<div className="min-h-screen bg-white"></div>} />
 
-          {/* Admin Routes */}
-          <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-            <Route
-              element={
-                <SidebarLayout
-                  links={[
-                    {
-                      label: "Dashboard",
-                      href: "/admin/dashboard",
-                      icon: Home,
-                    },
-                    {
-                      label: "Providers",
-                      href: "/admin/providers",
-                      icon: Users,
-                    },
-                    {
-                      label: "Requests",
-                      href: "/admin/requests",
-                      icon: FileText,
-                    },
-                    {
-                      label: "Profile",
-                      href: "/admin/profile",
-                      icon: User,
-                    },
-                  ]}
-                />
-              }
-            >
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/providers" element={<AdminProviders />} />
-              <Route path="/admin/requests" element={<AdminRequests />} />
-              <Route path="/admin/profile" element={<AdminProfile />} />
+            {/* Admin Routes */}
+            <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+              <Route
+                element={
+                  <SidebarLayout
+                    links={[
+                      {
+                        label: "Dashboard",
+                        href: "/admin/dashboard",
+                        icon: Home,
+                      },
+                      {
+                        label: "Providers",
+                        href: "/admin/providers",
+                        icon: Users,
+                      },
+                      {
+                        label: "Requests",
+                        href: "/admin/requests",
+                        icon: FileText,
+                      },
+                      {
+                        label: "Profile",
+                        href: "/admin/profile",
+                        icon: User,
+                      },
+                    ]}
+                  />
+                }
+              >
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/providers" element={<AdminProviders />} />
+                <Route path="/admin/requests" element={<AdminRequests />} />
+                <Route path="/admin/profile" element={<AdminProfile />} />
+              </Route>
             </Route>
-          </Route>
 
-          {/* User Routes */}
-          <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
-            <Route
-              element={
-                <SidebarLayout
-                  links={[
-                    { label: "Dashboard", href: "/user/dashboard", icon: Home },
-                    {
-                      label: "Search Providers",
-                      href: "/user/search",
-                      icon: Search,
-                    },
-                    {
-                      label: "My Requests",
-                      href: "/user/requests",
-                      icon: FileText,
-                    },
-                    {
-                      label: "Profile",
-                      href: "/user/profile",
-                      icon: User,
-                    },
-                  ]}
-                />
-              }
-            >
-              <Route path="/user/dashboard" element={<UserDashboard />} />
-              <Route path="/user/search" element={<UserSearch />} />
-              <Route path="/user/requests" element={<UserRequests />} />
-              <Route path="/user/provider/:id" element={<UserProviderProfile />} />
-              <Route path="/user/book" element={<CreateRequest />} />
-              <Route path="/user/profile" element={<UserProfile />} />
+            {/* User Routes */}
+            <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
+              <Route
+                element={
+                  <SidebarLayout
+                    links={[
+                      { label: "Dashboard", href: "/user/dashboard", icon: Home },
+                      {
+                        label: "Search Providers",
+                        href: "/user/search",
+                        icon: Search,
+                      },
+                      {
+                        label: "My Requests",
+                        href: "/user/requests",
+                        icon: FileText,
+                      },
+                      {
+                        label: "Profile",
+                        href: "/user/profile",
+                        icon: User,
+                      },
+                    ]}
+                  />
+                }
+              >
+                <Route path="/user/dashboard" element={<UserDashboard />} />
+                <Route path="/user/search" element={<UserSearch />} />
+                <Route path="/user/requests" element={<UserRequests />} />
+                <Route path="/user/provider/:id" element={<UserProviderProfile />} />
+                <Route path="/user/book" element={<CreateRequest />} />
+                <Route path="/user/profile" element={<UserProfile />} />
+              </Route>
             </Route>
-          </Route>
 
-          {/* Provider Routes */}
-          <Route element={<ProtectedRoute allowedRoles={["provider"]} />}>
-            <Route
-              element={
-                <SidebarLayout
-                  links={[
-                    {
-                      label: "Dashboard",
-                      href: "/provider/dashboard",
-                      icon: Home,
-                    },
-                    {
-                      label: "Incoming Requests",
-                      href: "/provider/incoming-requests",
-                      icon: Briefcase,
-                    },
-                    {
-                      label: "Assigned Requests",
-                      href: "/provider/assigned-requests",
-                      icon: FileText,
-                    },
-                    {
-                      id: "provider-profile",
-                      label: "Profile",
-                      href: "/provider/profile",
-                      icon: User,
-                    },
-                  ]}
+            {/* Provider Routes */}
+            <Route element={<ProtectedRoute allowedRoles={["provider"]} />}>
+              <Route
+                element={
+                  <SidebarLayout
+                    links={[
+                      {
+                        label: "Dashboard",
+                        href: "/provider/dashboard",
+                        icon: Home,
+                      },
+                      {
+                        label: "Incoming Requests",
+                        href: "/provider/incoming-requests",
+                        icon: Briefcase,
+                      },
+                      {
+                        label: "Assigned Requests",
+                        href: "/provider/assigned-requests",
+                        icon: FileText,
+                      },
+                      {
+                        id: "provider-profile",
+                        label: "Profile",
+                        href: "/provider/profile",
+                        icon: User,
+                      },
+                    ]}
+                  />
+                }
+              >
+                <Route
+                  path="/provider/dashboard"
+                  element={<ProviderDashboard />}
                 />
-              }
-            >
-              <Route
-                path="/provider/dashboard"
-                element={<ProviderDashboard />}
-              />
-              <Route
-                path="/provider/incoming-requests"
-                element={<ProviderIncoming />}
-              />
-              <Route
-                path="/provider/assigned-requests"
-                element={<ProviderAssigned />}
-              />
-              <Route
-                path="/provider/profile"
-                element={<ProviderProfile />}
-              />
+                <Route
+                  path="/provider/incoming-requests"
+                  element={<ProviderIncoming />}
+                />
+                <Route
+                  path="/provider/assigned-requests"
+                  element={<ProviderAssigned />}
+                />
+                <Route
+                  path="/provider/profile"
+                  element={<ProviderProfile />}
+                />
+              </Route>
             </Route>
-          </Route>
-        </Routes>
+          </Routes>
         </BookingProvider>
       </BrowserRouter>
     </AuthProvider>
