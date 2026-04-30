@@ -1,9 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const DetailedInfo = () => {
   return (
     <section className="py-24 bg-slate-50 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-16">
           
           {/* Left Text Column */}
@@ -24,9 +25,9 @@ const DetailedInfo = () => {
               </p>
             </div>
             
-            <button className="px-8 py-4 bg-slate-900 text-white font-semibold rounded-2xl hover:bg-indigo-600 shadow-xl shadow-slate-900/10 hover:shadow-indigo-500/30 transform hover:-translate-y-1 transition-all duration-300">
+            <Link to="/contact" className="inline-block px-8 py-4 bg-slate-900 text-white font-semibold rounded-2xl hover:bg-indigo-600 shadow-xl shadow-slate-900/10 hover:shadow-indigo-500/30 transform hover:-translate-y-1 transition-all duration-300">
               Join Our Network
-            </button>
+            </Link>
           </div>
           
           {/* Right Image/Illustration Column */}

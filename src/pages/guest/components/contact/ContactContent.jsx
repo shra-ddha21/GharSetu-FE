@@ -27,7 +27,7 @@ const ContactContent = () => {
 
   return (
     <section className={`py-16 bg-white transition-opacity duration-1000 ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           {/* LEFT SIDE */}
           <div className="space-y-8 lg:mt-8">
@@ -38,6 +38,7 @@ const ContactContent = () => {
                 content="Linkcode Technologies, Barve Complex, Pune" 
                 colorClass="bg-emerald-50 text-emerald-600"
                 hoverClass="group-hover:bg-emerald-600 group-hover:text-white"
+                link="https://www.google.com/maps/search/?api=1&query=Linkcode+Technologies+Barve+Complex+Pune"
               />
               <ContactCard 
                 icon={Mail} 
@@ -45,6 +46,7 @@ const ContactContent = () => {
                 content="support@gharsetu.com" 
                 colorClass="bg-blue-50 text-blue-600"
                 hoverClass="group-hover:bg-blue-600 group-hover:text-white"
+                link="https://mail.google.com/mail/?view=cm&fs=1&to=support@gharsetu.com"
               />
               <ContactCard 
                 icon={Phone} 
@@ -52,6 +54,7 @@ const ContactContent = () => {
                 content="+1 (555) 123-4567" 
                 colorClass="bg-amber-50 text-amber-600"
                 hoverClass="group-hover:bg-amber-600 group-hover:text-white"
+                link="tel:+15551234567"
               />
             </div>
             
