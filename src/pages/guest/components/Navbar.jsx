@@ -1,22 +1,32 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Shield, Home, Menu, LogOut, User, ChevronDown } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Shield, Home, Menu, LogOut, User, ChevronDown, X } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const mobileMenuRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target) && !event.target.closest('.mobile-toggle')) {
+        setIsMobileMenuOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
   
   const navLinks = [
     { name: 'Home', path: '/home' },
@@ -40,7 +50,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Right section: Navigation Links */}
+          {/* Center section: Navigation Links (Desktop) */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((item) => (
               <Link
@@ -93,9 +103,57 @@ const Navbar = () => {
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
-            <button className="text-slate-600 hover:text-indigo-600 transition-colors">
-              <Menu className="w-6 h-6" />
+            <button 
+              className="text-slate-600 hover:text-indigo-600 transition-colors mobile-toggle p-2 hover:bg-slate-50 rounded-lg"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu Drawer */}
+      <div 
+        ref={mobileMenuRef}
+        className={`md:hidden absolute top-full left-0 w-full bg-white border-b border-slate-100 shadow-xl transition-all duration-300 overflow-hidden ${isMobileMenuOpen ? 'max-h-[400px] py-4 opacity-100' : 'max-h-0 py-0 opacity-0'}`}
+      >
+        <div className="px-4 space-y-1">
+          {navLinks.map((item) => (
+            <Link
+              key={item.name}
+              to={item.path}
+              className="block px-4 py-3 text-base font-semibold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
+            >
+              {item.name}
+            </Link>
+          ))}
+          <div className="pt-4 mt-4 border-t border-slate-50">
+            {user ? (
+              <div className="space-y-1">
+                <Link 
+                  to={`/${user.role}/dashboard`}
+                  className="flex items-center gap-3 px-4 py-3 text-base font-semibold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
+                >
+                  <User className="w-5 h-5" />
+                  Dashboard
+                </Link>
+                <button 
+                  onClick={logout}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-base font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link 
+                to="/login"
+                className="block w-full px-4 py-4 bg-indigo-600 text-white text-center font-bold rounded-2xl shadow-lg shadow-indigo-100 active:scale-95 transition-all"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </div>

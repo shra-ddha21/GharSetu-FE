@@ -9,6 +9,7 @@ export default function Profile() {
   
   const [formData, setFormData] = useState({
     businessName: '',
+    serviceType: '',
     email: '',
     phone: '',
     location: '',
@@ -21,6 +22,27 @@ export default function Profile() {
   const [portfolioImages, setPortfolioImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [showServiceSuggestions, setShowServiceSuggestions] = useState(false);
+  const [serviceTypeQuery, setServiceTypeQuery] = useState('');
+
+  const ALL_SERVICE_TYPES = [
+    'General Labour', 'Mason', 'Centering Labour', 'Plumber', 'Electrician',
+    'Painter', 'Carpenter', 'Tile Fitting', 'Fabricator', 'Stone Work',
+    'Contractor', 'Architect', 'Structural Designer', 'Interior Designer',
+    'Estimation & Costing', 'Waterproofing', 'Survey', 'Core Cutting',
+    'Pest Control', 'CCTV Services', 'Borewell Service', 'Kitchen Services',
+    'Ceiling', 'Repairing Services', 'Equipment Rent', 'Railing Work',
+    'Roofing', 'Furniture', 'Earthmovers', 'Solar Services', 'Cement',
+    'Steel', 'Bricks', 'Plumbing', 'Aggregate', 'Sand', 'Electrical',
+    'Hardware', 'Tile/Paving Block', 'Paint', 'Fabrication',
+    'Concrete Articles', 'Murum & Construction Waste', 'Plywood/Laminate',
+    'Chemical/Adhesive', 'Home Decor', 'Nursery', 'Doors & Windows',
+    'Tools & Machinery',
+  ];
+
+  const filteredServices = ALL_SERVICE_TYPES.filter(s =>
+    s.toLowerCase().includes(serviceTypeQuery.toLowerCase())
+  );
 
   useEffect(() => {
     fetchProfile();
@@ -32,6 +54,7 @@ export default function Profile() {
       const profile = data.data;
       setFormData({
         businessName: profile.businessName || '',
+        serviceType: profile.serviceType || '',
         email: profile.email || '',
         phone: profile.phone || '',
         location: profile.location || '',
@@ -40,6 +63,7 @@ export default function Profile() {
         servicesOffered: profile.servicesOffered?.join(', ') || '',
         coordinates: profile.coordinates || null
       });
+      setServiceTypeQuery(profile.serviceType || '');
       setPortfolioImages(profile.portfolioImages || []);
       // Update global context so the notification dot goes away if complete
       updateUser(profile);
@@ -58,6 +82,7 @@ export default function Profile() {
     try {
       const payload = {
         businessName: formData.businessName,
+        serviceType: formData.serviceType,
         location: formData.location,
         experience: Number(formData.experience),
         description: formData.description,
@@ -105,29 +130,48 @@ export default function Profile() {
     }
   };
 
-  const handleDeleteImage = async (publicId) => {
-    if (!window.confirm('Are you sure you want to delete this image?')) return;
-    
-    try {
-      const { data } = await api.delete(`/providers/profile/portfolio/${publicId}`);
-      toast.success('Image deleted');
-      setPortfolioImages(data.data);
-      fetchProfile();
-    } catch (error) {
-      toast.error('Failed to delete image');
-    }
+  const handleDeleteImage = (publicId) => {
+    toast((t) => (
+      <div className="flex flex-col gap-3">
+        <p className="text-slate-800 font-medium">Are you sure you want to delete this image?</p>
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+              try {
+                const { data } = await api.delete(`/providers/profile/portfolio/${encodeURIComponent(publicId)}`);
+                toast.success('Image deleted');
+                setPortfolioImages(data.data);
+                fetchProfile();
+              } catch (error) {
+                toast.error('Failed to delete image');
+              }
+            }}
+            className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-colors"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    ), { duration: Infinity });
   };
 
   return (
-    <div className="flex flex-col gap-6 h-full max-w-4xl mx-auto w-full">
-      <header className="flex justify-between items-center">
+    <div className="flex flex-col gap-6 h-full max-w-4xl mx-auto w-full px-1">
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Provider Profile</h1>
           <p className="text-slate-500 text-sm">Manage your business information and portfolio.</p>
         </div>
       </header>
 
-      <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-sm">
         <h2 className="text-xl font-bold text-slate-800 mb-6 border-b pb-4">Basic Information</h2>
         
         <form onSubmit={handleSaveProfile} className="space-y-6">
@@ -142,6 +186,40 @@ export default function Profile() {
                 required
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
               />
+            </div>
+
+            <div className="space-y-2 relative">
+              <label className="text-sm font-semibold text-slate-700">Primary Category *</label>
+              <input
+                type="text"
+                value={serviceTypeQuery}
+                onChange={(e) => {
+                  setServiceTypeQuery(e.target.value);
+                  setShowServiceSuggestions(true);
+                }}
+                onFocus={() => setShowServiceSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowServiceSuggestions(false), 200)}
+                placeholder="Search primary category..."
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
+              />
+              {showServiceSuggestions && (
+                <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto">
+                  {filteredServices.map(s => (
+                    <button
+                      key={s}
+                      type="button"
+                      className="w-full text-left px-4 py-2 text-sm hover:bg-indigo-50 transition-colors"
+                      onClick={() => {
+                        setFormData({ ...formData, serviceType: s });
+                        setServiceTypeQuery(s);
+                        setShowServiceSuggestions(false);
+                      }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -236,8 +314,8 @@ export default function Profile() {
         </form>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
-        <div className="flex justify-between items-center mb-6 border-b pb-4">
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-sm">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b pb-4">
           <h2 className="text-xl font-bold text-slate-800">Portfolio Images</h2>
           
           <label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 transition-colors">
@@ -263,15 +341,17 @@ export default function Profile() {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {portfolioImages.map((img) => (
-              <div key={img.publicId} className="group relative aspect-square rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
+              <div key={img.publicId} className="group relative aspect-square rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm">
                 <img src={img.url} alt="Portfolio item" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                
+                {/* Delete Button - Always visible for better accessibility */}
+                <div className="absolute top-2 right-2">
                   <button
                     onClick={() => handleDeleteImage(img.publicId)}
-                    className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors transform scale-0 group-hover:scale-100 duration-200"
+                    className="p-2 bg-red-500/90 backdrop-blur-sm text-white rounded-lg hover:bg-red-600 transition-all shadow-md active:scale-90"
                     title="Delete Image"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>

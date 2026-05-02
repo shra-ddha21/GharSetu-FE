@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { api } from '../../contexts/AuthContext';
 import { Shield, Mail, Phone, MapPin, Camera, Save, Activity, Users, Briefcase, FileText } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import toast from 'react-hot-toast';
 
 export default function AdminProfile() {
   const [profile, setProfile] = useState({
@@ -59,9 +60,9 @@ export default function AdminProfile() {
         address: profile.address
       });
       setProfile(prev => ({...prev, name: data.name, phone: data.phone, address: data.address}));
-      alert('Admin profile updated successfully!');
+      toast.success('Admin profile updated successfully!');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update profile');
+      toast.error(err.response?.data?.message || 'Failed to update profile');
     } finally {
       setSaving(false);
     }
@@ -80,17 +81,18 @@ export default function AdminProfile() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setProfile(prev => ({ ...prev, profileImage: data }));
+      toast.success('Profile image updated!');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to upload image');
+      toast.error(err.response?.data?.message || 'Failed to upload image');
     } finally {
       setUploading(false);
     }
   };
 
   const chartData = useMemo(() => [
-    { name: 'Users', value: stats.totalUsers, color: '#3b82f6' },
-    { name: 'Providers', value: stats.totalProviders, color: '#4f46e5' },
-    { name: 'Requests', value: stats.totalRequests, color: '#10b981' }
+    { name: 'Users', value: stats.totalUsers, color: '#9333EA' },
+    { name: 'Providers', value: stats.totalProviders, color: '#4F46E5' },
+    { name: 'Requests', value: stats.totalRequests, color: '#0D9488' }
   ], [stats]);
 
   if (loading) return (
@@ -101,7 +103,7 @@ export default function AdminProfile() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 pb-12">
+    <div className="max-w-6xl mx-auto space-y-8 pb-12 px-1">
       
       {/* Header */}
       <div>
@@ -118,7 +120,7 @@ export default function AdminProfile() {
              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white to-transparent"></div>
           </div>
           
-          <div className="px-8 pb-8 relative flex-1">
+          <div className="px-4 sm:px-8 pb-8 relative flex-1">
             {/* Avatar Upload */}
             <div className="relative w-32 h-32 -mt-16 mb-8 rounded-full border-[6px] border-white bg-slate-100 shadow-lg group">
               {profile.profileImage?.url ? (
@@ -211,7 +213,7 @@ export default function AdminProfile() {
 
         {/* Side Stats Section */}
         <div className="flex flex-col gap-6">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-8">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-4 sm:p-8">
              <div className="flex items-center justify-between mb-8">
                <h3 className="font-extrabold text-slate-900 text-xl tracking-tight">Platform Metrics</h3>
                <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">

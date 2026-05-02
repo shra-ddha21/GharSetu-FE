@@ -1,19 +1,52 @@
 @import "tailwindcss";
 
+@theme {
+  /* Backgrounds / Surfaces */
+  --color-slate-50: #F8FAFC;
+  --color-slate-100: #F1F5F9;
+  --color-slate-200: #E2E8F0;
+  --color-white: #FFFFFF;
+
+  /* Typography */
+  --color-slate-900: #0F172A;
+  --color-slate-800: #1E293B;
+  --color-slate-700: #334155;
+  --color-slate-600: #475569;
+  --color-slate-500: #64748B;
+
+  /* Main Brand / Accent Color (Indigo) */
+  --color-indigo-50: #EEF2FF;
+  --color-indigo-100: #E0E7FF;
+  --color-indigo-500: #6366F1;
+  --color-indigo-600: #4F46E5;
+  --color-indigo-700: #4338CA;
+  --color-indigo-800: #3730A3;
+
+  /* Status & Auxiliary Colors */
+  /* Success */
+  --color-emerald-50: #ECFDF5;
+  --color-green-50: #F0FDF4;
+  --color-emerald-700: #047857;
+  --color-green-600: #16A34A;
+
+  /* Errors */
+  --color-red-50: #FEF2F2;
+  --color-red-600: #DC2626;
+
+  /* Warnings */
+  --color-amber-50: #FFFBEB;
+  --color-amber-600: #D97706;
+
+  /* Variant Dashboard Accents */
+  --color-teal-50: #F0FDFA;
+  --color-teal-600: #0D9488;
+  --color-purple-50: #FAF5FF;
+  --color-purple-600: #9333EA;
+}
+
 /* Hide the default password reveal eye icon in Edge/IE to prevent duplicates with our custom icon */
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
   display: none;
-@theme {
-  --color-indigo-50: #ebfcff;
-  --color-indigo-100: #d1f7ff;
-  --color-indigo-200: #a3eeff;
-  --color-indigo-300: #75e5ff;
-  --color-indigo-400: #47dcff;
-  --color-indigo-500: #1ad3ff;
-  --color-indigo-600: #35D7FF;
-  --color-indigo-700: #29b2d9;
-  --color-indigo-800: #1e8bb3;
-  --color-indigo-900: #13638c;
-  --color-indigo-950: #0a3d5e;
 }
+

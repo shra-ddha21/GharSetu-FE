@@ -71,16 +71,61 @@ export default function Requests() {
       <div className="space-y-6">
         {requests.map(r => (
           <div key={r._id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-            {/* Header */}
-            <div className="flex justify-between items-start mb-5">
+            {/* Header & Status */}
+            <div className="flex justify-between items-start mb-4">
                <div>
-                  <h3 className="font-bold text-lg text-slate-900">{r.requirement}</h3>
-                  <p className="text-sm text-slate-500 mt-1">From: {r.userId?.name} ({r.userId?.email})</p>
-                  <p className="text-sm text-slate-500">Pref. Date: {new Date(r.preferredDate).toLocaleDateString()}</p>
+                  <h3 className="font-extrabold text-xl text-slate-900 tracking-tight">{r.requirement}</h3>
+                  <div className="flex items-center gap-2 mt-1 text-slate-500">
+                    <CheckCircle className="w-4 h-4 text-indigo-500" />
+                    <span className="text-sm font-medium">Preferred Date: {new Date(r.preferredDate).toLocaleDateString()}</span>
+                  </div>
                </div>
-               <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${getStatusStyle(r.status)}`}>
+               <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm ${getStatusStyle(r.status)}`}>
                  {r.status}
                </span>
+            </div>
+
+            {/* Customer Details Row */}
+            <div className="flex flex-wrap items-center gap-x-8 gap-y-3 mb-6 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+               <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm border border-slate-100">
+                    <User className="w-4 h-4 text-indigo-600" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 leading-none mb-1">Customer</span>
+                    <span className="text-sm font-bold text-slate-800 leading-none">{r.userId?.name}</span>
+                  </div>
+               </div>
+
+               <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm border border-slate-100">
+                    <Mail className="w-4 h-4 text-indigo-600" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 leading-none mb-1">Email Address</span>
+                    <span className="text-sm font-medium text-slate-600 leading-none">{r.userId?.email}</span>
+                  </div>
+               </div>
+
+               <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm border border-slate-100">
+                    <Phone className="w-4 h-4 text-indigo-600" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 leading-none mb-1">Mobile Number</span>
+                    <span className="text-sm font-medium text-slate-600 leading-none">{r.userId?.phone || 'Not provided'}</span>
+                  </div>
+               </div>
+
+               <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm border border-slate-100">
+                    <MapPin className="w-4 h-4 text-indigo-600" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 leading-none mb-1">Address</span>
+                    <span className="text-sm font-medium text-slate-600 leading-none">{r.userId?.address || 'Not provided'}</span>
+                  </div>
+               </div>
             </div>
 
             {/* Selected Providers */}

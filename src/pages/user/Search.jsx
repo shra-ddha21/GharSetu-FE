@@ -71,7 +71,7 @@ export default function Search() {
     <div className="flex flex-col md:flex-row gap-6 items-start">
       
       {/* Sidebar Filters */}
-      <div className="w-full md:w-1/4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex-shrink-0 sticky top-6">
+      <div className="w-full md:w-1/4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex-shrink-0 sticky top-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
             <SlidersHorizontal className="w-5 h-5 text-indigo-600" /> Filters
@@ -209,11 +209,11 @@ export default function Search() {
                 <ProviderMap providers={providers} height="600px" />
               </div>
             ) : (
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {providers.map(p => {
                   const isSelected = selectedProviders.includes(p._id);
                   return (
-                    <div key={p._id} className={`p-6 bg-white rounded-2xl border transition-all ${isSelected ? 'border-indigo-500 ring-1 ring-indigo-500 shadow-md' : 'hover:shadow-md border-slate-200'}`}>
+                    <div key={p._id} className={`p-4 sm:p-6 bg-white rounded-2xl border transition-all ${isSelected ? 'border-indigo-500 ring-1 ring-indigo-500 shadow-md' : 'hover:shadow-md border-slate-200'}`}>
                       <div className="flex justify-between items-start mb-4">
                         <div>
                           <h3 className="font-bold text-lg text-slate-900">{p.businessName}</h3>

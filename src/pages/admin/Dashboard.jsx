@@ -22,7 +22,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-6 h-full px-1">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-2">
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center relative overflow-hidden">
            {loading && <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10"><Loader2 className="w-6 h-6 text-indigo-600 animate-spin" /></div>}
