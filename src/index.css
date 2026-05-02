@@ -4,16 +4,59 @@
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
   display: none;
+}
+
 @theme {
-  --color-indigo-50: #ebfcff;
-  --color-indigo-100: #d1f7ff;
-  --color-indigo-200: #a3eeff;
-  --color-indigo-300: #75e5ff;
-  --color-indigo-400: #47dcff;
-  --color-indigo-500: #1ad3ff;
-  --color-indigo-600: #35D7FF;
-  --color-indigo-700: #29b2d9;
-  --color-indigo-800: #1e8bb3;
-  --color-indigo-900: #13638c;
-  --color-indigo-950: #0a3d5e;
+  --color-indigo-50: #f0f7ff;
+  --color-indigo-100: #e0effe;
+  --color-indigo-200: #bae0fd;
+  --color-indigo-300: #7cc7fb;
+  --color-indigo-400: #38a9f8;
+  --color-indigo-500: #0e8ce9;
+  --color-indigo-600: #026dc6;
+  --color-indigo-700: #0357a1;
+  --color-indigo-800: #074a85;
+  --color-indigo-900: #0c3f6e;
+  --color-indigo-950: #082849;
+}
+
+@layer utilities {
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+}
+
+.skeleton-box {
+  background-color: #e2e8f0; /* Darker slate-200 for better visibility */
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-box::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 50%, /* More opaque shimmer */
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
 }

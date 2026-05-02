@@ -3,12 +3,14 @@ import { api } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { MapPin, Mail, Phone, Briefcase, CheckCircle, XCircle, Clock, ShieldCheck, User } from 'lucide-react';
 
+import Skeleton from '../../components/Skeleton';
+
 export default function Providers() {
   const [providers, setProviders] = useState([]);
   const [statusFilter, setStatusFilter] = useState('');
   const [loading, setLoading] = useState(true);
   
-  // Rejection Modal State
+  // ... (rest of the component state)
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [rejectProviderId, setRejectProviderId] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
@@ -94,9 +96,23 @@ export default function Providers() {
 
       <div className="space-y-4">
         {loading ? (
-          <div className="py-20 flex justify-center">
-            <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-          </div>
+          Array(5).fill(0).map((_, i) => (
+            <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+              <div className="flex justify-between items-start">
+                <div className="space-y-3 flex-1">
+                  <div className="flex gap-3">
+                    <Skeleton variant="title" className="w-1/3 h-6" />
+                    <Skeleton className="w-24 h-6 rounded-full" />
+                  </div>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <Skeleton variant="text" className="w-3/4" />
+                    <Skeleton variant="text" className="w-3/4" />
+                    <Skeleton variant="text" className="w-3/4" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
         ) : (
           <>
             {providers.map(p => (
