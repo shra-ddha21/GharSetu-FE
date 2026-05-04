@@ -3,10 +3,17 @@ import { api } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { MapPin, Mail, Phone, Briefcase, CheckCircle, XCircle, Clock, ShieldCheck, User } from 'lucide-react';
 
+import Skeleton from '../../components/Skeleton';
+
 export default function Providers() {
   const [providers, setProviders] = useState([]);
   const [statusFilter, setStatusFilter] = useState('');
   const [loading, setLoading] = useState(true);
+  
+  // ... (rest of the component state)
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [rejectProviderId, setRejectProviderId] = useState(null);
+  const [rejectReason, setRejectReason] = useState('');
 
   const fetchProviders = async () => {
     setLoading(true);
@@ -26,14 +33,25 @@ export default function Providers() {
     fetchProviders();
   }, [statusFilter]);
 
-  const handleAction = async (id, action) => {
+  const handleAction = async (id, action, reason = '') => {
     try {
-      await api.patch(`/admin/providers/${id}/${action}`);
+      await api.patch(`/admin/providers/${id}/${action}`, { reason });
       toast.success(`Provider ${action}d successfully`);
       fetchProviders();
+      if (action === 'reject') {
+        setIsRejectModalOpen(false);
+        setRejectReason('');
+        setRejectProviderId(null);
+      }
     } catch (err) {
       toast.error('Failed to update provider status');
     }
+  };
+
+  const openRejectModal = (id) => {
+    setRejectProviderId(id);
+    setRejectReason('');
+    setIsRejectModalOpen(true);
   };
 
   const getStatusBadge = (status) => {
@@ -78,9 +96,23 @@ export default function Providers() {
 
       <div className="space-y-4">
         {loading ? (
-          <div className="py-20 flex justify-center">
-            <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-          </div>
+          Array(5).fill(0).map((_, i) => (
+            <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+              <div className="flex justify-between items-start">
+                <div className="space-y-3 flex-1">
+                  <div className="flex gap-3">
+                    <Skeleton variant="title" className="w-1/3 h-6" />
+                    <Skeleton className="w-24 h-6 rounded-full" />
+                  </div>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <Skeleton variant="text" className="w-3/4" />
+                    <Skeleton variant="text" className="w-3/4" />
+                    <Skeleton variant="text" className="w-3/4" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
         ) : (
           <>
             {providers.map(p => (
@@ -114,7 +146,7 @@ export default function Providers() {
                       <CheckCircle className="w-4 h-4" /> Approve
                     </button>
                     <button 
-                      onClick={() => handleAction(p._id, 'reject')}
+                      onClick={() => openRejectModal(p._id)}
                       className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-xl transition-colors"
                     >
                       <XCircle className="w-4 h-4" /> Reject
@@ -156,6 +188,40 @@ export default function Providers() {
           </>
         )}
       </div>
+
+      {/* Rejection Modal */}
+      {isRejectModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Reject Provider</h3>
+            <p className="text-sm text-slate-500 mb-4">Please provide a reason for rejecting this application. This will be sent to the provider via email.</p>
+            
+            <textarea
+              className="w-full border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
+              rows="4"
+              placeholder="e.g. Does not meet minimum experience requirements."
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+            ></textarea>
+            
+            <div className="flex justify-end gap-3 mt-6">
+              <button 
+                onClick={() => setIsRejectModalOpen(false)}
+                className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => handleAction(rejectProviderId, 'reject', rejectReason)}
+                disabled={!rejectReason.trim()}
+                className="px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+              >
+                Confirm Rejection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

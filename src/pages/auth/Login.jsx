@@ -24,7 +24,7 @@ export default function Login() {
       let currentRole = role;
       let endpoint = role === 'provider' ? '/providers/login' : '/users/login';
       
-      if (email === 'admin@gharsetu.com' || email === 'admin') {
+      if (email === 'gharsetu03@gmail.com' || email === 'admin') {
         currentRole = 'admin';
         endpoint = '/admin/login';
       }

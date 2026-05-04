@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { api } from '../../contexts/AuthContext';
 import { Shield, Mail, Phone, MapPin, Camera, Save, Activity, Users, Briefcase, FileText } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import Skeleton from '../../components/Skeleton';
 
 export default function AdminProfile() {
   const [profile, setProfile] = useState({
@@ -93,12 +94,40 @@ export default function AdminProfile() {
     { name: 'Requests', value: stats.totalRequests, color: '#10b981' }
   ], [stats]);
 
-  if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh]">
-      <div className="w-8 h-8 border-4 border-slate-300 border-t-slate-800 rounded-full animate-spin"></div>
-      <p className="mt-4 text-slate-500 font-medium animate-pulse">Loading Admin Profile...</p>
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700 pb-12">
+        <div className="space-y-2">
+          <Skeleton variant="title" className="w-64" />
+          <Skeleton variant="text" className="w-96" />
+        </div>
+        <div className="grid lg:grid-cols-[1fr,400px] gap-8">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden h-fit">
+            <Skeleton className="h-40 w-full" />
+            <div className="px-8 pb-8 space-y-6">
+              <Skeleton variant="circle" className="w-32 h-32 -mt-16 border-[6px] border-white" />
+              <div className="grid md:grid-cols-2 gap-6">
+                {Array(4).fill(0).map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton variant="text" className="w-24" />
+                    <Skeleton className="h-12 w-full rounded-2xl" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="space-y-6">
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 space-y-4">
+              <Skeleton variant="avatar" className="rounded-2xl" />
+              <Skeleton variant="title" className="w-3/4" />
+              <Skeleton variant="text" />
+              <Skeleton className="h-48 w-full rounded-3xl" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-12">

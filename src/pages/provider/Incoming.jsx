@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { api } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { Calendar, User, Clock, BellRing, CheckCircle, XCircle } from 'lucide-react';
+import Skeleton from '../../components/Skeleton';
 
 export default function Incoming() {
   const [requests, setRequests] = useState([]);
@@ -33,7 +34,28 @@ export default function Incoming() {
     }
   };
 
-  if (loading) return <div className="p-8 text-center text-slate-500 font-medium">Loading incoming requests...</div>;
+  if (loading) {
+    return (
+      <div className="space-y-6 animate-in fade-in duration-700">
+        <Skeleton variant="title" className="w-64 h-8 mb-6" />
+        {Array(3).fill(0).map((_, i) => (
+          <div key={i} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
+            <div className="space-y-3">
+              <Skeleton variant="title" className="w-3/4" />
+              <div className="grid grid-cols-2 gap-4">
+                <Skeleton variant="text" />
+                <Skeleton variant="text" />
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Skeleton className="h-12 flex-1" />
+              <Skeleton className="h-12 flex-1" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div>
