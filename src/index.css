@@ -48,16 +48,4 @@
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
   display: none;
-@theme {
-  --color-indigo-50: #ebfcff;
-  --color-indigo-100: #d1f7ff;
-  --color-indigo-200: #a3eeff;
-  --color-indigo-300: #75e5ff;
-  --color-indigo-400: #47dcff;
-  --color-indigo-500: #1ad3ff;
-  --color-indigo-600: #35D7FF;
-  --color-indigo-700: #29b2d9;
-  --color-indigo-800: #1e8bb3;
-  --color-indigo-900: #13638c;
-  --color-indigo-950: #0a3d5e;
 }
