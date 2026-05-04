@@ -461,6 +461,40 @@ export default function Profile() {
               />
             </div>
 
+            <div className="space-y-2 relative">
+              <label className="text-sm font-semibold text-slate-700">Primary Category *</label>
+              <input
+                type="text"
+                value={serviceTypeQuery}
+                onChange={(e) => {
+                  setServiceTypeQuery(e.target.value);
+                  setShowServiceSuggestions(true);
+                }}
+                onFocus={() => setShowServiceSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowServiceSuggestions(false), 200)}
+                placeholder="Search primary category..."
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
+              />
+              {showServiceSuggestions && (
+                <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto">
+                  {filteredServices.map(s => (
+                    <button
+                      key={s}
+                      type="button"
+                      className="w-full text-left px-4 py-2 text-sm hover:bg-indigo-50 transition-colors"
+                      onClick={() => {
+                        setFormData({ ...formData, serviceType: s });
+                        setServiceTypeQuery(s);
+                        setShowServiceSuggestions(false);
+                      }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="space-y-2">
               <label className="text-sm font-semibold text-slate-700">Owner Name <span className="text-red-500">*</span></label>
               <input

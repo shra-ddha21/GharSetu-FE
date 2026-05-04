@@ -89,7 +89,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 font-sans text-slate-900 p-6 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-slate-100 font-sans text-slate-900 p-2 sm:p-6 relative overflow-hidden">
       {/* Background Decorative Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-50 rounded-full blur-3xl opacity-50"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-50 rounded-full blur-3xl opacity-50"></div>
@@ -104,7 +104,7 @@ export default function Register() {
         </Link>
 
         {/* Left Section: Branding */}
-        <div className="md:w-5/12 bg-indigo-600 text-white p-6 md:p-10 flex flex-col justify-start items-start text-left relative overflow-hidden pt-10 md:pt-16">
+        <div className="hidden md:flex md:w-5/12 bg-indigo-600 text-white p-6 md:p-10 flex-col justify-start items-start text-left relative overflow-hidden pt-10 md:pt-16">
           <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
             <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] bg-white rounded-full blur-3xl"></div>
           </div>

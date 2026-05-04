@@ -1,62 +1,52 @@
 @import "tailwindcss";
 
+@theme {
+  /* Backgrounds / Surfaces */
+  --color-slate-50: #F8FAFC;
+  --color-slate-100: #F1F5F9;
+  --color-slate-200: #E2E8F0;
+  --color-white: #FFFFFF;
+
+  /* Typography */
+  --color-slate-900: #0F172A;
+  --color-slate-800: #1E293B;
+  --color-slate-700: #334155;
+  --color-slate-600: #475569;
+  --color-slate-500: #64748B;
+
+  /* Main Brand / Accent Color (Indigo) */
+  --color-indigo-50: #EEF2FF;
+  --color-indigo-100: #E0E7FF;
+  --color-indigo-500: #6366F1;
+  --color-indigo-600: #4F46E5;
+  --color-indigo-700: #4338CA;
+  --color-indigo-800: #3730A3;
+
+  /* Status & Auxiliary Colors */
+  /* Success */
+  --color-emerald-50: #ECFDF5;
+  --color-green-50: #F0FDF4;
+  --color-emerald-700: #047857;
+  --color-green-600: #16A34A;
+
+  /* Errors */
+  --color-red-50: #FEF2F2;
+  --color-red-600: #DC2626;
+
+  /* Warnings */
+  --color-amber-50: #FFFBEB;
+  --color-amber-600: #D97706;
+
+  /* Variant Dashboard Accents */
+  --color-teal-50: #F0FDFA;
+  --color-teal-600: #0D9488;
+  --color-purple-50: #FAF5FF;
+  --color-purple-600: #9333EA;
+}
+
 /* Hide the default password reveal eye icon in Edge/IE to prevent duplicates with our custom icon */
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
   display: none;
 }
 
-@theme {
-  --color-indigo-50: #f0f7ff;
-  --color-indigo-100: #e0effe;
-  --color-indigo-200: #bae0fd;
-  --color-indigo-300: #7cc7fb;
-  --color-indigo-400: #38a9f8;
-  --color-indigo-500: #0e8ce9;
-  --color-indigo-600: #026dc6;
-  --color-indigo-700: #0357a1;
-  --color-indigo-800: #074a85;
-  --color-indigo-900: #0c3f6e;
-  --color-indigo-950: #082849;
-}
-
-@layer utilities {
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-
-  .shimmer {
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.4) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 2s infinite;
-  }
-}
-
-.skeleton-box {
-  background-color: #e2e8f0; /* Darker slate-200 for better visibility */
-  position: relative;
-  overflow: hidden;
-}
-
-.skeleton-box::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.6) 50%, /* More opaque shimmer */
-    rgba(255, 255, 255, 0) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite linear;
-}
