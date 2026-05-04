@@ -20,6 +20,7 @@ export default function Register() {
     location: '',
     serviceType: ''
   });
+  const [countryCode, setCountryCode] = useState('+91');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -67,7 +68,15 @@ export default function Register() {
 
     try {
       const endpoint = role === 'provider' ? '/providers/register' : '/users/register';
-      const payload = role === 'provider' ? formData : { name: formData.name, email: formData.email, password: formData.password };
+      const payload = role === 'provider' ? {
+        ...formData,
+        phone: formData.phone ? `${countryCode}${formData.phone}` : ''
+      } : { 
+        name: formData.name, 
+        email: formData.email, 
+        password: formData.password,
+        phone: formData.phone ? `${countryCode}${formData.phone}` : ''
+      };
 
       const { data } = await api.post(endpoint, payload);
 
@@ -176,6 +185,32 @@ export default function Register() {
                         autoComplete="off"
                       />
                     </div>
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 mb-1 ml-1">Phone Number</label>
+                      <div className="flex">
+                        <select 
+                          value={countryCode}
+                          onChange={(e) => setCountryCode(e.target.value)}
+                          className="bg-slate-100 border border-slate-200 border-r-0 rounded-l-xl px-2 py-3 text-slate-700 font-bold text-xs outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all"
+                        >
+                          <option value="+91">+91 (IN)</option>
+                          <option value="+1">+1 (US)</option>
+                          <option value="+44">+44 (UK)</option>
+                          <option value="+971">+971 (UAE)</option>
+                        </select>
+                        <input
+                          name="phone"
+                          type="tel"
+                          required
+                          maxLength={10}
+                          placeholder="9876543210"
+                          className="w-full px-4 py-3 border border-slate-200 rounded-r-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-sm font-medium"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          autoComplete="off"
+                        />
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-5">
@@ -208,18 +243,29 @@ export default function Register() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-bold text-slate-700 mb-1 ml-1">Phone</label>
-                        <input
-                          name="phone"
-                          type="tel"
-                          required
-                          pattern="[0-9]{10}"
-                          title="Please enter exactly 10 digits"
-                          placeholder="+91 0000000000"
-                          className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-sm"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          autoComplete="off"
-                        />
+                        <div className="flex">
+                          <select 
+                            value={countryCode}
+                            onChange={(e) => setCountryCode(e.target.value)}
+                            className="bg-slate-100 border border-slate-200 border-r-0 rounded-l-xl px-1.5 py-3 text-slate-700 font-bold text-[10px] outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all"
+                          >
+                            <option value="+91">+91 (IN)</option>
+                            <option value="+1">+1 (US)</option>
+                            <option value="+44">+44 (UK)</option>
+                            <option value="+971">+971 (UAE)</option>
+                          </select>
+                          <input
+                            name="phone"
+                            type="tel"
+                            required
+                            maxLength={10}
+                            placeholder="9876543210"
+                            className="w-full px-4 py-3 border border-slate-200 rounded-r-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-sm font-medium"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            autoComplete="off"
+                          />
+                        </div>
                       </div>
                       <div>
                         <label className="block text-sm font-bold text-slate-700 mb-1 ml-1">Location</label>

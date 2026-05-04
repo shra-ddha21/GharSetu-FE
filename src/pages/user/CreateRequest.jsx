@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../../contexts/AuthContext';
+import { api, useAuth } from '../../contexts/AuthContext';
 import { useBooking } from '../../contexts/BookingContext';
 import { ArrowLeft, X, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -17,6 +17,8 @@ export default function CreateRequest() {
     setPreferredDate,
   } = useBooking();
 
+  const { user } = useAuth();
+
   const [providerDetails, setProviderDetails] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [loadingProviders, setLoadingProviders] = useState(true);
@@ -24,6 +26,18 @@ export default function CreateRequest() {
   useEffect(() => {
     if (selectedProviders.length === 0) {
       navigate('/user/search');
+      return;
+    }
+
+    // Wait for user to be loaded
+    if (!user) return;
+
+    // Check if user profile is complete
+    if (!user.phone || !user.address) {
+      toast.error('Please complete your profile (Phone & Address) before creating a request', {
+        id: 'profile-incomplete'
+      });
+      navigate('/user/profile');
       return;
     }
 

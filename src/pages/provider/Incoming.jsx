@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
-import { Calendar, User, Clock, BellRing, CheckCircle, XCircle } from 'lucide-react';
+import { Calendar, User, Clock, BellRing, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import Skeleton from '../../components/Skeleton';
 
 export default function Incoming() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState(null);
 
   const fetchRequests = async () => {
     try {
@@ -24,6 +25,7 @@ export default function Incoming() {
   }, []);
 
   const handleRespond = async (id, action) => {
+    setProcessingId(id);
     try {
       await api.post(`/providers/requests/${id}/respond`, { action });
       toast.success(`Request ${action}ed successfully.`);
@@ -31,6 +33,8 @@ export default function Incoming() {
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to respond');
       fetchRequests(); // refresh in case it was locked by another provider
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -104,16 +108,19 @@ export default function Incoming() {
                  </p>
               </div>
 
-              <div className="flex md:flex-col gap-3 min-w-[140px]">
+              <div className="flex flex-col gap-3 min-w-[150px]">
                  <button 
                    onClick={() => handleRespond(responseObj.requestId._id, 'accept')}
-                   className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
+                   disabled={processingId === responseObj.requestId._id}
+                   className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition-all active:scale-[0.98] shadow-sm disabled:opacity-70"
                  >
-                   <CheckCircle className="w-4 h-4" /> Accept Job
+                   {processingId === responseObj.requestId._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                   Accept Job
                  </button>
                  <button 
                    onClick={() => handleRespond(responseObj.requestId._id, 'reject')}
-                   className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-xl transition-colors"
+                   disabled={processingId === responseObj.requestId._id}
+                   className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-xl transition-all active:scale-[0.98] disabled:opacity-70"
                  >
                    <XCircle className="w-4 h-4" /> Decline
                  </button>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth, api } from '../../contexts/AuthContext';
 import { Camera, Trash2, UploadCloud, Save, Loader2, MapPin, BadgeCheck, Phone, FileText, Image as ImageIcon, CheckCircle, AlertCircle, Search } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -7,6 +7,7 @@ import Skeleton from '../../components/Skeleton';
 
 export default function Profile() {
   const { user, updateUser } = useAuth();
+  const lastLookupPincode = useRef(null);
   
   const [formData, setFormData] = useState({
     businessName: '',
@@ -26,6 +27,8 @@ export default function Profile() {
     },
     coordinates: null
   });
+  
+  const [countryCode, setCountryCode] = useState('+91');
   
   const [profileDocs, setProfileDocs] = useState({
     profileImage: null,
@@ -85,6 +88,16 @@ export default function Profile() {
     backImage: null
   });
 
+  const [serviceTypeQuery, setServiceTypeQuery] = useState('');
+  const [showServiceSuggestions, setShowServiceSuggestions] = useState(false);
+
+  const filteredServices = useMemo(() => {
+    if (!serviceTypeQuery) return allServices.slice(0, 10);
+    return allServices.filter(s => 
+      s.toLowerCase().includes(serviceTypeQuery.toLowerCase())
+    ).slice(0, 10);
+  }, [allServices, serviceTypeQuery]);
+
   useEffect(() => {
     fetchProfile();
     // Fetch the full service taxonomy for the dropdown
@@ -96,8 +109,9 @@ export default function Profile() {
   // Pincode auto-fill effect
   useEffect(() => {
     const pincode = formData.address.pincode;
-    if (pincode && pincode.length === 6 && /^\d+$/.test(pincode)) {
+    if (pincode && pincode.length === 6 && /^\d+$/.test(pincode) && pincode !== lastLookupPincode.current) {
       handlePincodeLookup(pincode);
+      lastLookupPincode.current = pincode;
     }
   }, [formData.address.pincode]);
 
@@ -111,7 +125,7 @@ export default function Profile() {
           businessName: profile.businessName || '',
           ownerName: profile.ownerName || '',
           email: profile.email || '',
-          phone: profile.phone || '',
+          phone: (profile.phone || '').slice(-10),
           serviceType: profile.serviceType || '',
           servicesOffered: profile.servicesOffered || [],
           experience: profile.experience || '',
@@ -125,6 +139,15 @@ export default function Profile() {
           },
           coordinates: profile.coordinates || null
         });
+
+        // Extract country code (everything except the last 10 digits)
+        const fullPhone = profile.phone || '';
+        if (fullPhone.length > 10) {
+          setCountryCode(fullPhone.slice(0, -10));
+        }
+        
+        setServiceTypeQuery(profile.serviceType || '');
+        lastLookupPincode.current = profile.address?.pincode || null;
       }
       
       setPortfolioImages(profile.portfolioImages || []);
@@ -142,7 +165,10 @@ export default function Profile() {
         setMissingFields([]);
       }
 
-      updateUser(profile);
+      updateUser({
+        ...profile,
+        phone: (profile.phone || '').slice(-10)
+      });
     } catch (error) {
       toast.error('Failed to load profile');
     } finally {
@@ -185,7 +211,13 @@ export default function Profile() {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === 'phone') {
+      const numericValue = value.replace(/\D/g, '').slice(0, 10);
+      setFormData({ ...formData, [name]: numericValue });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleAddressChange = (e) => {
@@ -203,7 +235,8 @@ export default function Profile() {
       const payload = {
         businessName: formData.businessName,
         ownerName: formData.ownerName,
-        phone: formData.phone,
+        phone: formData.phone ? `${countryCode}${formData.phone}` : '',
+        serviceType: formData.serviceType,
         experience: Number(formData.experience),
         description: formData.description,
         servicesOffered: Array.isArray(formData.servicesOffered)
@@ -217,7 +250,10 @@ export default function Profile() {
       toast.success('Profile updated successfully');
       setCompletionPercentage(data.data.completionPercentage);
       setIsVerifiedProfile(data.data.isVerifiedProfile);
-      updateUser(data.data);
+      updateUser({
+        ...data.data,
+        phone: (data.data.phone || '').slice(-10)
+      });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to update profile');
     } finally {
@@ -297,15 +333,16 @@ export default function Profile() {
   };
 
   const handleSendOtp = async () => {
-    // Check if phone starts with +
-    if (!formData.phone.startsWith('+')) {
-      toast.error("Please add country code (e.g. +91) to your phone number for SMS delivery.");
+    if (formData.phone.length !== 10) {
+      toast.error("Please enter a valid 10-digit phone number.");
       return;
     }
 
     setSendingOtp(true);
     try {
-      await api.post('/providers/profile/send-phone-otp', { phone: formData.phone });
+      await api.post('/providers/profile/send-phone-otp', { 
+        phone: formData.phone ? `${countryCode}${formData.phone}` : '' 
+      });
       toast.success('OTP sent via SMS!');
       setShowOtpModal(true);
     } catch (error) {
@@ -596,32 +633,39 @@ export default function Profile() {
                   <span className="text-amber-500 flex items-center gap-1 text-xs"><AlertCircle className="w-3 h-3"/> Unverified</span>
                 )}
               </label>
-              <div className="flex gap-2">
+              <div className="flex">
+                <select 
+                  value={countryCode}
+                  onChange={(e) => setCountryCode(e.target.value)}
+                  className="bg-slate-100 border border-slate-200 border-r-0 rounded-l-xl px-3 py-3 text-slate-700 font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-500 z-10"
+                >
+                  <option value="+91">+91 (IN)</option>
+                  <option value="+1">+1 (US)</option>
+                  <option value="+44">+44 (UK)</option>
+                  <option value="+971">+971 (UAE)</option>
+                </select>
                 <input
                   type="text"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none"
-                  placeholder="+91..."
+                  maxLength={10}
+                  className="flex-1 px-4 py-3 rounded-r-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none"
+                  placeholder="9876543210"
                 />
                 {!phoneVerified && (
                   <button
                     type="button"
                     onClick={handleSendOtp}
                     disabled={sendingOtp}
-                    className="px-4 py-2 bg-indigo-50 text-indigo-700 font-semibold rounded-xl border border-indigo-100 hover:bg-indigo-100 transition-colors whitespace-nowrap flex items-center gap-2"
+                    className="ml-2 px-4 py-2 bg-indigo-50 text-indigo-700 font-semibold rounded-xl border border-indigo-100 hover:bg-indigo-100 transition-colors whitespace-nowrap flex items-center gap-2"
                   >
                     {sendingOtp ? <Loader2 className="w-4 h-4 animate-spin" /> : <Phone className="w-4 h-4" />}
                     Verify
                   </button>
                 )}
               </div>
-              {!phoneVerified && !formData.phone.startsWith('+') && (
-                <p className="text-[10px] text-amber-600 mt-1 flex items-center gap-1">
-                  <AlertCircle className="w-2.5 h-2.5" /> Include country code (+91) for SMS delivery
-                </p>
-              )}
+
             </div>
 
             <div className="space-y-2">

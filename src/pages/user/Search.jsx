@@ -135,14 +135,14 @@ export default function Search() {
                 <button 
                   key={category.categoryId}
                   onClick={() => handleSelectCategory(category)}
-                  className="group relative bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm hover:shadow-2xl hover:border-indigo-300 hover:-translate-y-1 transition-all duration-300 flex flex-col items-start text-left overflow-hidden"
+                  className="group relative bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm hover:shadow-2xl hover:border-indigo-400 hover:-translate-y-1.5 transition-all duration-300 flex flex-col items-start text-left overflow-hidden active:scale-95"
                 >
-                  <div className="absolute -right-8 -top-8 w-32 h-32 bg-indigo-50/50 rounded-full group-hover:scale-[2] transition-transform duration-700 ease-in-out"></div>
-                  <div className="relative z-10 w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-inner">
+                  <div className="absolute -right-8 -top-8 w-32 h-32 bg-indigo-50/50 rounded-full group-hover:scale-[2.5] transition-transform duration-700 ease-in-out"></div>
+                  <div className="relative z-10 w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-inner group-hover:bg-indigo-600 group-hover:text-white">
                     <IconComponent className="w-7 h-7" />
                   </div>
-                  <h3 className="relative z-10 text-xl font-bold text-slate-800 mb-3 group-hover:text-indigo-700 transition-colors leading-tight">{category.name}</h3>
-                  <p className="relative z-10 text-sm text-slate-500 line-clamp-2 leading-relaxed">{category.description}</p>
+                  <h3 className="relative z-10 text-xl font-extrabold text-slate-800 mb-3 group-hover:text-indigo-800 transition-colors leading-tight tracking-tight">{category.name}</h3>
+                  <p className="relative z-10 text-sm font-medium text-slate-500 line-clamp-2 leading-relaxed group-hover:text-slate-600 transition-colors">{category.description}</p>
                 </button>
               )
             })
@@ -184,10 +184,10 @@ export default function Search() {
               <button
                 key={sub}
                 onClick={() => handleSelectSubcategory(sub)}
-                className="px-6 py-5 bg-slate-50 border border-slate-200 rounded-2xl text-left hover:bg-white hover:border-indigo-300 hover:shadow-lg hover:text-indigo-700 font-semibold text-slate-700 transition-all flex justify-between items-center group active:scale-[0.98]"
+                className="px-6 py-5 bg-slate-50 border border-slate-200 rounded-2xl text-left hover:bg-white hover:border-indigo-400 hover:shadow-xl hover:text-indigo-800 font-bold text-slate-700 transition-all flex justify-between items-center group active:scale-[0.98]"
               >
                 <span className="pr-4">{sub}</span>
-                <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-indigo-500 transition-colors shrink-0" />
+                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all shrink-0" />
               </button>
             ))}
           </div>
@@ -454,6 +454,44 @@ export default function Search() {
           </>
         )}
       </div>
+
+      {/* Sticky Selection Footer */}
+      {selectedProviders.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6 bg-white/80 backdrop-blur-xl border-t border-slate-200 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] animate-in slide-in-from-bottom duration-500">
+          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="flex -space-x-3">
+                {selectedProviders.slice(0, 3).map((id, i) => (
+                  <div key={id} className="w-10 h-10 rounded-full bg-indigo-600 border-2 border-white flex items-center justify-center text-white text-xs font-bold shadow-md">
+                    {i + 1}
+                  </div>
+                ))}
+                {selectedProviders.length > 3 && (
+                   <div className="w-10 h-10 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-slate-600 text-xs font-bold shadow-md">
+                     +{selectedProviders.length - 3}
+                   </div>
+                )}
+              </div>
+              <div>
+                <p className="text-slate-900 font-extrabold text-lg tracking-tight">
+                  {selectedProviders.length} {selectedProviders.length === 1 ? 'Provider' : 'Providers'} Selected
+                </p>
+                <p className="text-slate-500 text-xs font-medium">Ready to discuss your requirements?</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <button 
+                onClick={() => navigate('/user/book')}
+                className="flex-1 sm:flex-none px-12 py-4.5 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl shadow-xl shadow-indigo-600/30 transition-all active:scale-[0.97] flex items-center justify-center gap-3 group tracking-tight"
+              >
+                Continue to Request
+                <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

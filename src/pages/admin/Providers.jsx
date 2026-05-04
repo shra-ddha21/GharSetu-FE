@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
-import { MapPin, Mail, Phone, Briefcase, CheckCircle, XCircle, Clock, ShieldCheck, User } from 'lucide-react';
+import { MapPin, Mail, Phone, Briefcase, CheckCircle, XCircle, Clock, ShieldCheck, User, Loader2 } from 'lucide-react';
 
 import Skeleton from '../../components/Skeleton';
 
@@ -9,6 +9,7 @@ export default function Providers() {
   const [providers, setProviders] = useState([]);
   const [statusFilter, setStatusFilter] = useState('');
   const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState(null);
   
   // ... (rest of the component state)
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
@@ -34,6 +35,7 @@ export default function Providers() {
   }, [statusFilter]);
 
   const handleAction = async (id, action, reason = '') => {
+    setProcessingId(id);
     try {
       await api.patch(`/admin/providers/${id}/${action}`, { reason });
       toast.success(`Provider ${action}d successfully`);
@@ -45,6 +47,8 @@ export default function Providers() {
       }
     } catch (err) {
       toast.error('Failed to update provider status');
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -141,13 +145,16 @@ export default function Providers() {
                   <div className="flex flex-row md:flex-col gap-2 min-w-[140px] pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-slate-100 md:pl-6">
                     <button 
                       onClick={() => handleAction(p._id, 'approve')}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
+                      disabled={processingId === p._id}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition-all active:scale-[0.98] shadow-sm disabled:opacity-70"
                     >
-                      <CheckCircle className="w-4 h-4" /> Approve
+                      {processingId === p._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                      {processingId === p._id ? '...' : 'Approve'}
                     </button>
                     <button 
                       onClick={() => openRejectModal(p._id)}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-xl transition-colors"
+                      disabled={processingId === p._id}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-xl transition-all active:scale-[0.98] disabled:opacity-70"
                     >
                       <XCircle className="w-4 h-4" /> Reject
                     </button>
@@ -158,9 +165,11 @@ export default function Providers() {
                   <div className="flex flex-row md:flex-col gap-2 min-w-[140px] pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-slate-100 md:pl-6">
                     <button 
                       onClick={() => handleAction(p._id, 'deactivate')}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-semibold rounded-xl transition-colors border border-red-100"
+                      disabled={processingId === p._id}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-bold rounded-xl transition-all active:scale-[0.98] border border-red-100 disabled:opacity-70"
                     >
-                      <XCircle className="w-4 h-4" /> Deactivate
+                      {processingId === p._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
+                      {processingId === p._id ? '...' : 'Deactivate'}
                     </button>
                   </div>
                 )}
@@ -169,9 +178,11 @@ export default function Providers() {
                   <div className="flex flex-row md:flex-col gap-2 min-w-[140px] pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-slate-100 md:pl-6">
                     <button 
                       onClick={() => handleAction(p._id, 'reactivate')}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
+                      disabled={processingId === p._id}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-all active:scale-[0.98] shadow-sm disabled:opacity-70"
                     >
-                      <CheckCircle className="w-4 h-4" /> Reactivate
+                      {processingId === p._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                      {processingId === p._id ? '...' : 'Reactivate'}
                     </button>
                   </div>
                 )}

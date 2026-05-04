@@ -52,7 +52,7 @@ export default function LocationPicker({
       </div>
       <p className="text-xs text-slate-500">
         Click anywhere on the map to pin your exact service location.
-        {position && (
+        {position && typeof position.lat === 'number' && typeof position.lng === 'number' && (
           <span className="block mt-1 text-indigo-600 font-medium">
             Selected coordinates: {position.lat.toFixed(4)}, {position.lng.toFixed(4)}
           </span>

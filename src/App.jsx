@@ -13,7 +13,7 @@ import { useState, useRef, useEffect } from "react";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { BookingProvider } from "./contexts/BookingContext";
 import { cn } from "./lib/utils.jsx";
-import { LogOut, Home, Users, Briefcase, FileText, Search, User, ChevronDown, Menu as MenuIcon, X } from "lucide-react";
+import { LogOut, Home, Users, Briefcase, FileText, Search, User, ChevronDown, Menu as MenuIcon, X, Layers } from "lucide-react";
 
 // Page Imports
 import Login from "./pages/auth/Login";
@@ -128,7 +128,10 @@ const SidebarLayout = ({ links }) => {
               >
                 <div className="relative">
                   <Icon className="w-5 h-5" />
-                  {link.id === 'provider-profile' && user?.role === 'provider' && (!user.experience || !user.description || !user.portfolioImages || user.portfolioImages.length === 0) && (
+                  {link.id === 'provider-profile' && user?.role === 'provider' && (user.completionPercentage < 100) && (
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
+                  )}
+                  {link.id === 'user-profile' && user?.role === 'user' && (!user.phone || !user.address) && (
                     <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
                   )}
                 </div>
@@ -336,6 +339,7 @@ export default function App() {
                       },
                       {
                         label: "Profile",
+                        id: "user-profile",
                         href: "/user/profile",
                         icon: User,
                       },

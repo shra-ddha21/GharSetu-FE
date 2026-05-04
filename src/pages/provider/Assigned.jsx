@@ -118,7 +118,7 @@ export default function Assigned() {
                    href={r.meeting.link} 
                    target="_blank" 
                    rel="noreferrer" 
-                   className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl transition-colors text-center shadow-sm"
+                   className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-all active:scale-[0.98] text-center shadow-md shadow-indigo-100"
                  >
                    Join Meeting Room
                  </a>

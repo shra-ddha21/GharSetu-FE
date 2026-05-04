@@ -13,6 +13,7 @@ export default function AdminProfile() {
     address: '',
     profileImage: null
   });
+  const [countryCode, setCountryCode] = useState('+91');
   const [stats, setStats] = useState({ 
     totalUsers: 0,
     totalProviders: 0,
@@ -33,10 +34,16 @@ export default function AdminProfile() {
         setProfile({
           name: profileRes.data.name || '',
           email: profileRes.data.email || '',
-          phone: profileRes.data.phone || '',
+          // Take only the last 10 digits
+          phone: (profileRes.data.phone || '').slice(-10),
           address: profileRes.data.address || '',
           profileImage: profileRes.data.profileImage || null
         });
+        // Extract country code
+        const fullPhone = profileRes.data.phone || '';
+        if (fullPhone.length > 10) {
+          setCountryCode(fullPhone.slice(0, -10));
+        }
         setStats(statsRes.data);
       } catch (err) {
         console.error('Failed to fetch admin profile data', err);
@@ -48,7 +55,13 @@ export default function AdminProfile() {
   }, []);
 
   const handleChange = (e) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === 'phone') {
+      const numericValue = value.replace(/\D/g, '').slice(0, 10);
+      setProfile({ ...profile, [name]: numericValue });
+    } else {
+      setProfile({ ...profile, [name]: value });
+    }
   };
 
   const handleSave = async (e) => {
@@ -57,10 +70,20 @@ export default function AdminProfile() {
     try {
       const { data } = await api.put('/admin/profile', {
         name: profile.name,
-        phone: profile.phone,
+        // Prepend selected country code
+        phone: profile.phone ? `${countryCode}${profile.phone}` : '',
         address: profile.address
       });
-      setProfile(prev => ({...prev, name: data.name, phone: data.phone, address: data.address}));
+      // Sync local state with returned data (but keep it stripped for local use)
+      setProfile(prev => ({
+        ...prev, 
+        name: data.name, 
+        phone: (data.phone || '').slice(-10), 
+        address: data.address
+      }));
+      if (data.phone && data.phone.length > 10) {
+        setCountryCode(data.phone.slice(0, -10));
+      }
       toast.success('Admin profile updated successfully!');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update profile');
@@ -201,13 +224,25 @@ export default function AdminProfile() {
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
                   <label className="block text-sm font-bold text-slate-700 tracking-wide uppercase">Phone Number</label>
-                  <div className="relative group">
-                    <Phone className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-800 transition-colors" />
-                    <input 
-                      type="tel" name="phone" value={profile.phone} onChange={handleChange} 
-                      className="w-full pl-11 pr-4 py-3 bg-slate-50/50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-slate-900/5 focus:border-slate-800 outline-none transition-all font-medium text-slate-900 placeholder:text-slate-400"
-                      placeholder="+1 (555) 000-0000"
-                    />
+                  <div className="group">
+                    <div className="flex">
+                      <select 
+                        value={countryCode}
+                        onChange={(e) => setCountryCode(e.target.value)}
+                        className="bg-slate-100 border border-slate-200 border-r-0 rounded-l-2xl px-3 py-3 text-slate-700 font-bold text-sm outline-none focus:ring-4 focus:ring-slate-900/5 transition-all"
+                      >
+                        <option value="+91">+91 (IN)</option>
+                        <option value="+1">+1 (US)</option>
+                        <option value="+44">+44 (UK)</option>
+                        <option value="+971">+971 (UAE)</option>
+                      </select>
+                      <input 
+                        type="tel" name="phone" value={profile.phone} onChange={handleChange}
+                        maxLength={10}
+                        className="w-full pl-4 pr-4 py-3 bg-slate-50/50 border border-slate-200 rounded-r-2xl focus:ring-4 focus:ring-slate-900/5 focus:border-slate-800 outline-none transition-all font-medium text-slate-900 placeholder:text-slate-400"
+                        placeholder="9876543210"
+                      />
+                    </div>
                   </div>
                 </div>
 
