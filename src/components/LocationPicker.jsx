@@ -18,16 +18,17 @@ export default function LocationPicker({
   defaultCenter = [20.5937, 78.9629],
   defaultZoom = 4
 }) {
-  const [position, setPosition] = useState(value || null);
+  const [position, setPosition] = useState(value && typeof value.lat === 'number' && typeof value.lng === 'number' ? value : null);
 
   // Sync internal state if prop changes
   useEffect(() => {
-    if (value && value.lat && value.lng) {
+    if (value && typeof value.lat === 'number' && typeof value.lng === 'number') {
       setPosition(value);
     }
   }, [value]);
 
   const handlePositionChange = (latlng) => {
+    if (!latlng) return;
     setPosition(latlng);
     onChange({ lat: latlng.lat, lng: latlng.lng });
   };
@@ -52,7 +53,7 @@ export default function LocationPicker({
       </div>
       <p className="text-xs text-slate-500">
         Click anywhere on the map to pin your exact service location.
-        {position && (
+        {position && typeof position.lat === 'number' && typeof position.lng === 'number' && (
           <span className="block mt-1 text-indigo-600 font-medium">
             Selected coordinates: {position.lat.toFixed(4)}, {position.lng.toFixed(4)}
           </span>
