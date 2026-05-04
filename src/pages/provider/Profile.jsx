@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth, api } from '../../contexts/AuthContext';
 import { Camera, Trash2, UploadCloud, Save, Loader2, MapPin, BadgeCheck, Phone, FileText, Image as ImageIcon, CheckCircle, AlertCircle, Search } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -45,6 +45,13 @@ export default function Profile() {
   const [missingFields, setMissingFields] = useState([]);
   const [allServices, setAllServices] = useState([]);
   const [showServiceDropdown, setShowServiceDropdown] = useState(false);
+  const [serviceTypeQuery, setServiceTypeQuery] = useState('');
+  const [showServiceSuggestions, setShowServiceSuggestions] = useState(false);
+
+  const filteredServices = useMemo(() => {
+    if (!serviceTypeQuery) return allServices;
+    return allServices.filter(s => s.toLowerCase().includes(serviceTypeQuery.toLowerCase()));
+  }, [allServices, serviceTypeQuery]);
 
   const formatMissingField = (field) => {
     const map = {
@@ -64,7 +71,8 @@ export default function Profile() {
       'governmentId.backImage': 'Govt ID (Back)',
       'coordinates': 'Map Location (Pin on Map)',
       'phoneVerified': 'Verify Phone Number',
-      'servicesOffered': 'Services Offered'
+      'servicesOffered': 'Services Offered',
+      'serviceType': 'Primary Category'
     };
     return map[field] || field;
   };
@@ -106,6 +114,7 @@ export default function Profile() {
       const { data } = await api.get('/providers/profile');
       const profile = data.data;
       
+      
       if (!keepFormData) {
         setFormData({
           businessName: profile.businessName || '',
@@ -125,6 +134,7 @@ export default function Profile() {
           },
           coordinates: profile.coordinates || null
         });
+        setServiceTypeQuery(profile.serviceType || '');
       }
       
       setPortfolioImages(profile.portfolioImages || []);
@@ -206,6 +216,7 @@ export default function Profile() {
         phone: formData.phone,
         experience: Number(formData.experience),
         description: formData.description,
+        serviceType: formData.serviceType,
         servicesOffered: Array.isArray(formData.servicesOffered)
           ? formData.servicesOffered
           : formData.servicesOffered.split(',').map(s => s.trim()).filter(s => s),
@@ -283,17 +294,54 @@ export default function Profile() {
     }
   };
 
-  const handleDeletePortfolioImage = async (publicId) => {
-    if (!window.confirm('Are you sure you want to delete this image?')) return;
-    
-    try {
-      const { data } = await api.delete(`/providers/profile/portfolio/${publicId}`);
-      toast.success('Image deleted');
-      setPortfolioImages(data.data);
-      fetchProfile(true);
-    } catch (error) {
-      toast.error('Failed to delete image');
-    }
+  const handleDeletePortfolioImage = (publicId) => {
+    toast((t) => (
+      <div className="flex flex-col gap-4 p-1">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center text-red-500 shrink-0">
+            <Trash2 className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-slate-900">Delete Image?</p>
+            <p className="text-xs text-slate-500">This action cannot be undone.</p>
+          </div>
+        </div>
+        <div className="flex gap-2 justify-end">
+          <button
+            onClick={() => {
+              toast.dismiss(t.id);
+            }}
+            className="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+              try {
+                const { data } = await api.delete(`/providers/profile/portfolio/${encodeURIComponent(publicId)}`);
+                toast.success('Image removed from portfolio');
+                setPortfolioImages(data.data);
+                fetchProfile(true);
+              } catch (error) {
+                toast.error('Failed to delete image');
+              }
+            }}
+            className="px-4 py-2 text-xs font-bold bg-red-600 text-white hover:bg-red-700 rounded-xl transition-all shadow-lg shadow-red-200 active:scale-95"
+          >
+            Confirm Delete
+          </button>
+        </div>
+      </div>
+    ), {
+      id: 'portfolio-delete-confirmation',
+      duration: Infinity,
+      style: {
+        borderRadius: '2rem',
+        padding: '16px',
+        maxWidth: '400px'
+      }
+    });
   };
 
   const handleSendOtp = async () => {
@@ -800,7 +848,10 @@ export default function Profile() {
                 <div className="w-12 h-12 rounded bg-white border border-slate-200 flex items-center justify-center overflow-hidden">
                   {profileDocs.governmentId?.frontImage ? <img src={profileDocs.governmentId.frontImage.url} className="w-full h-full object-cover" /> : <ImageIcon className="w-5 h-5 text-slate-300" />}
                 </div>
-                <div className="flex-1"><p className="text-sm font-medium">Front Side</p></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Front Side</p>
+                  {selectedDocs.frontImage && <p className="text-[10px] text-indigo-600 font-medium truncate max-w-[150px]">Selected: {selectedDocs.frontImage.name}</p>}
+                </div>
                 <input type="file" id="frontIdInput" className="hidden" accept="image/*" onChange={(e) => handleDocumentSelect(e, 'frontImage')} />
                 <label htmlFor="frontIdInput" className="cursor-pointer p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600"><UploadCloud className="w-4 h-4" /></label>
               </div>
@@ -808,7 +859,10 @@ export default function Profile() {
                 <div className="w-12 h-12 rounded bg-white border border-slate-200 flex items-center justify-center overflow-hidden">
                   {profileDocs.governmentId?.backImage ? <img src={profileDocs.governmentId.backImage.url} className="w-full h-full object-cover" /> : <ImageIcon className="w-5 h-5 text-slate-300" />}
                 </div>
-                <div className="flex-1"><p className="text-sm font-medium">Back Side</p></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Back Side</p>
+                  {selectedDocs.backImage && <p className="text-[10px] text-indigo-600 font-medium truncate max-w-[150px]">Selected: {selectedDocs.backImage.name}</p>}
+                </div>
                 <input type="file" id="backIdInput" className="hidden" accept="image/*" onChange={(e) => handleDocumentSelect(e, 'backImage')} />
                 <label htmlFor="backIdInput" className="cursor-pointer p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600"><UploadCloud className="w-4 h-4" /></label>
               </div>

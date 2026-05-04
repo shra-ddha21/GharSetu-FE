@@ -13,7 +13,7 @@ import { useState, useRef, useEffect } from "react";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { BookingProvider } from "./contexts/BookingContext";
 import { cn } from "./lib/utils.jsx";
-import { LogOut, Home, Users, Briefcase, FileText, Search, User, ChevronDown, Menu as MenuIcon, X } from "lucide-react";
+import { LogOut, Home, Users, Briefcase, FileText, Search, User, ChevronDown, Menu as MenuIcon, X, Layers } from "lucide-react";
 
 // Page Imports
 import Login from "./pages/auth/Login";
