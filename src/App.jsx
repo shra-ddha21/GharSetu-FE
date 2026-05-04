@@ -13,7 +13,7 @@ import { useState, useRef, useEffect } from "react";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { BookingProvider } from "./contexts/BookingContext";
 import { cn } from "./lib/utils.jsx";
-import { LogOut, Home, Users, Briefcase, FileText, Search, User, ChevronDown } from "lucide-react";
+import { LogOut, Home, Users, Briefcase, FileText, Search, User, ChevronDown, Menu as MenuIcon, X } from "lucide-react";
 
 // Page Imports
 import Login from "./pages/auth/Login";
@@ -26,6 +26,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import AdminProviders from "./pages/admin/Providers";
 import AdminRequests from "./pages/admin/Requests";
 import AdminProfile from "./pages/admin/Profile";
+import AdminServices from "./pages/admin/Services";
 import UserDashboard from "./pages/user/Dashboard";
 import UserProfile from "./pages/user/Profile";
 import UserSearch from "./pages/user/Search";
@@ -62,22 +63,45 @@ const SidebarLayout = ({ links }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const sidebarRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target) && !event.target.closest('.mobile-menu-toggle')) {
+        setIsSidebarOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [location.pathname]);
+
   return (
     <div className="min-h-screen bg-slate-50 flex font-sans text-slate-900 border-slate-200">
+      {/* Sidebar Backdrop for Mobile */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col p-6 shrink-0">
+      <aside 
+        ref={sidebarRef}
+        className={cn(
+          "w-64 bg-white border-r border-slate-200 flex flex-col p-6 shrink-0 fixed inset-y-0 left-0 z-50 transition-transform duration-300 lg:sticky lg:translate-x-0 h-screen overflow-y-auto",
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
         <div className="flex items-center gap-3 mb-10">
           <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl uppercase">
             {user?.role ? user.role[0] : "G"}
@@ -136,20 +160,28 @@ const SidebarLayout = ({ links }) => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-auto flex flex-col relative bg-slate-50/50">
-        <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md px-8 py-4 flex justify-between items-center pt-6 pb-2">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
-              Welcome, <span className="text-indigo-600 capitalize">{user?.name || user?.businessName || user?.role}</span>
-            </h2>
-            <p className="text-sm text-slate-500 mt-1 font-medium">
+      <main className="flex-1 overflow-x-hidden flex flex-col relative bg-slate-50/50">
+        <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md px-4 sm:px-8 py-4 flex justify-between items-center pt-6 pb-2">
+          <div className="flex items-center gap-4">
+            <button 
+              className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg mobile-menu-toggle"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            >
+              {isSidebarOpen ? <X className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
+            </button>
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight line-clamp-1">
+                Welcome, <span className="text-indigo-600 capitalize">{user?.name || user?.businessName || user?.role}</span>
+              </h2>
+              <p className="hidden sm:block text-sm text-slate-500 mt-1 font-medium">
               {user?.role === 'admin' && 'Overview of service ecosystem and provider status.'}
               {user?.role === 'provider' && 'Manage your service requests and assignments.'}
               {user?.role === 'user' && 'What do you need help with today?'}
             </p>
           </div>
+        </div>
 
-          <div className="relative ml-2" ref={dropdownRef}>
+        <div className="relative ml-2" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="flex items-center gap-2 p-1.5 pr-3 bg-white border border-slate-200 rounded-full hover:bg-slate-50 transition-all shadow-sm group"
@@ -182,7 +214,7 @@ const SidebarLayout = ({ links }) => {
           </div>
         </header>
 
-        <div className="p-8 max-w-6xl mx-auto w-full flex flex-col gap-6">
+        <div className="p-4 sm:p-8 max-w-6xl mx-auto w-full flex flex-col gap-6">
           <Outlet />
         </div>
       </main>
@@ -219,7 +251,7 @@ export default function App() {
           },
           error: {
             iconTheme: {
-              primary: '#ef4444',
+              primary: '#DC2626',
               secondary: '#ffffff',
             },
           },
@@ -264,6 +296,11 @@ export default function App() {
                         icon: FileText,
                       },
                       {
+                        label: "Services",
+                        href: "/admin/services",
+                        icon: Layers,
+                      },
+                      {
                         label: "Profile",
                         href: "/admin/profile",
                         icon: User,
@@ -275,6 +312,7 @@ export default function App() {
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/providers" element={<AdminProviders />} />
                 <Route path="/admin/requests" element={<AdminRequests />} />
+                <Route path="/admin/services" element={<AdminServices />} />
                 <Route path="/admin/profile" element={<AdminProfile />} />
               </Route>
             </Route>

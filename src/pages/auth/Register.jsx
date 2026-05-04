@@ -27,22 +27,22 @@ export default function Register() {
   const [serviceTypeQuery, setServiceTypeQuery] = useState('');
   const [showServiceSuggestions, setShowServiceSuggestions] = useState(false);
 
-  const ALL_SERVICE_TYPES = [
-    'General Labour', 'Mason', 'Centering Labour', 'Plumber', 'Electrician',
-    'Painter', 'Carpenter', 'Tile Fitting', 'Fabricator', 'Stone Work',
-    'Contractor', 'Architect', 'Structural Designer', 'Interior Designer',
-    'Estimation & Costing', 'Waterproofing', 'Survey', 'Core Cutting',
-    'Pest Control', 'CCTV Services', 'Borewell Service', 'Kitchen Services',
-    'Ceiling', 'Repairing Services', 'Equipment Rent', 'Railing Work',
-    'Roofing', 'Furniture', 'Earthmovers', 'Solar Services', 'Cement',
-    'Steel', 'Bricks', 'Plumbing', 'Aggregate', 'Sand', 'Electrical',
-    'Hardware', 'Tile/Paving Block', 'Paint', 'Fabrication',
-    'Concrete Articles', 'Murum & Construction Waste', 'Plywood/Laminate',
-    'Chemical/Adhesive', 'Home Decor', 'Nursery', 'Doors & Windows',
-    'Tools & Machinery',
-  ];
+  const [allServiceTypes, setAllServiceTypes] = useState([]);
 
-  const filteredServices = ALL_SERVICE_TYPES.filter(s =>
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await api.get('/services/categories');
+        const flattened = data.flatMap(cat => cat.subcategories || []);
+        setAllServiceTypes(flattened);
+      } catch (err) {
+        console.error('Failed to load categories', err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const filteredServices = allServiceTypes.filter(s =>
     s.toLowerCase().includes(serviceTypeQuery.toLowerCase())
   );
 
@@ -89,7 +89,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 font-sans text-slate-900 p-6 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-slate-100 font-sans text-slate-900 p-2 sm:p-6 relative overflow-hidden">
       {/* Background Decorative Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-50 rounded-full blur-3xl opacity-50"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-50 rounded-full blur-3xl opacity-50"></div>
@@ -104,7 +104,7 @@ export default function Register() {
         </Link>
 
         {/* Left Section: Branding */}
-        <div className="md:w-5/12 bg-indigo-600 text-white p-6 md:p-10 flex flex-col justify-start items-start text-left relative overflow-hidden pt-10 md:pt-16">
+        <div className="hidden md:flex md:w-5/12 bg-indigo-600 text-white p-6 md:p-10 flex-col justify-start items-start text-left relative overflow-hidden pt-10 md:pt-16">
           <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
             <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] bg-white rounded-full blur-3xl"></div>
           </div>
