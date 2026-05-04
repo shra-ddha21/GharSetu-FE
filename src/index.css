@@ -4,6 +4,8 @@
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
   display: none;
+}
+
 @theme {
   --color-indigo-50: #ebfcff;
   --color-indigo-100: #d1f7ff;
