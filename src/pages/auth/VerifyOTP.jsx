@@ -7,7 +7,7 @@ import { api } from '../../contexts/AuthContext';
 export default function VerifyOTP() {
   const [otp, setOtp] = useState(['', '', '', '']);
   const [loading, setLoading] = useState(false);
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(60);
   const [resending, setResending] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,7 +21,7 @@ export default function VerifyOTP() {
     }
   }, [email, navigate]);
 
-  // 30-second countdown timer
+  // 60-second countdown timer
   useEffect(() => {
     if (timer <= 0) return;
     const interval = setInterval(() => {
@@ -73,7 +73,7 @@ export default function VerifyOTP() {
     setResending(true);
     try {
       await api.post('/forgot-password', { email });
-      setTimer(30);
+      setTimer(60);
       setOtp(['', '', '', '']);
       if (inputs.current[0]) inputs.current[0].focus();
       toast.success('New OTP sent!');

@@ -5,6 +5,7 @@ import { useBooking } from '../../contexts/BookingContext';
 import { ArrowLeft, MapPin, Briefcase, Clock, ImageIcon, Map, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ProviderMap from '../../components/ProviderMap';
+import Skeleton from '../../components/Skeleton';
 
 export default function ProviderProfile() {
   const { id } = useParams();
@@ -32,11 +33,30 @@ export default function ProviderProfile() {
     };
     fetchProvider();
   }, [id]);
-
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+      <div className="flex flex-col gap-8 max-w-4xl mx-auto w-full animate-in fade-in duration-700">
+        <Skeleton className="h-10 w-32 rounded-xl" />
+        <div className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-8">
+          <Skeleton variant="circle" className="w-32 h-32" />
+          <div className="flex-1 space-y-3">
+            <Skeleton variant="title" className="w-64" />
+            <Skeleton variant="text" className="w-48" />
+            <div className="flex gap-2">
+              <Skeleton className="w-24 h-6 rounded-full" />
+              <Skeleton className="w-24 h-6 rounded-full" />
+            </div>
+          </div>
+        </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <Skeleton className="h-64 rounded-[2rem]" />
+          <div className="space-y-4">
+            <Skeleton variant="title" className="w-48" />
+            <Skeleton variant="text" />
+            <Skeleton variant="text" />
+            <Skeleton variant="text" className="w-1/2" />
+          </div>
+        </div>
       </div>
     );
   }

@@ -27,22 +27,22 @@ export default function Register() {
   const [serviceTypeQuery, setServiceTypeQuery] = useState('');
   const [showServiceSuggestions, setShowServiceSuggestions] = useState(false);
 
-  const ALL_SERVICE_TYPES = [
-    'General Labour', 'Mason', 'Centering Labour', 'Plumber', 'Electrician',
-    'Painter', 'Carpenter', 'Tile Fitting', 'Fabricator', 'Stone Work',
-    'Contractor', 'Architect', 'Structural Designer', 'Interior Designer',
-    'Estimation & Costing', 'Waterproofing', 'Survey', 'Core Cutting',
-    'Pest Control', 'CCTV Services', 'Borewell Service', 'Kitchen Services',
-    'Ceiling', 'Repairing Services', 'Equipment Rent', 'Railing Work',
-    'Roofing', 'Furniture', 'Earthmovers', 'Solar Services', 'Cement',
-    'Steel', 'Bricks', 'Plumbing', 'Aggregate', 'Sand', 'Electrical',
-    'Hardware', 'Tile/Paving Block', 'Paint', 'Fabrication',
-    'Concrete Articles', 'Murum & Construction Waste', 'Plywood/Laminate',
-    'Chemical/Adhesive', 'Home Decor', 'Nursery', 'Doors & Windows',
-    'Tools & Machinery',
-  ];
+  const [allServiceTypes, setAllServiceTypes] = useState([]);
 
-  const filteredServices = ALL_SERVICE_TYPES.filter(s =>
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await api.get('/services/categories');
+        const flattened = data.flatMap(cat => cat.subcategories || []);
+        setAllServiceTypes(flattened);
+      } catch (err) {
+        console.error('Failed to load categories', err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const filteredServices = allServiceTypes.filter(s =>
     s.toLowerCase().includes(serviceTypeQuery.toLowerCase())
   );
 

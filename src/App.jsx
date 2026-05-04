@@ -26,6 +26,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import AdminProviders from "./pages/admin/Providers";
 import AdminRequests from "./pages/admin/Requests";
 import AdminProfile from "./pages/admin/Profile";
+import AdminServices from "./pages/admin/Services";
 import UserDashboard from "./pages/user/Dashboard";
 import UserProfile from "./pages/user/Profile";
 import UserSearch from "./pages/user/Search";
@@ -295,6 +296,11 @@ export default function App() {
                         icon: FileText,
                       },
                       {
+                        label: "Services",
+                        href: "/admin/services",
+                        icon: Layers,
+                      },
+                      {
                         label: "Profile",
                         href: "/admin/profile",
                         icon: User,
@@ -306,6 +312,7 @@ export default function App() {
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/providers" element={<AdminProviders />} />
                 <Route path="/admin/requests" element={<AdminRequests />} />
+                <Route path="/admin/services" element={<AdminServices />} />
                 <Route path="/admin/profile" element={<AdminProfile />} />
               </Route>
             </Route>
