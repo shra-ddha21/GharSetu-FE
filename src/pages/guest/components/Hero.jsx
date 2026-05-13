@@ -12,7 +12,7 @@ const Hero = () => {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-700 text-sm font-semibold tracking-wide uppercase mb-2 border border-indigo-100">
             <Star className="w-4 h-4 fill-indigo-500 text-indigo-500" /> Top Rated Platform
           </div>
-          <h1 className="text-5xl lg:text-6xl font-extrabold text-slate-900 leading-tight tracking-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-tight tracking-tight">
             Elevate Your <br className="hidden lg:block"/> 
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Home Experience</span>
           </h1>

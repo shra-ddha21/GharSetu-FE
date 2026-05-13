@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../contexts/AuthContext';
 import { User, Mail, Phone, MapPin, Camera, Save, Activity, LayoutDashboard, ChevronRight } from 'lucide-react';
+import toast from 'react-hot-toast';
+import Skeleton from '../../components/Skeleton';
 
 export default function UserProfile() {
   const [profile, setProfile] = useState({
@@ -54,9 +56,9 @@ export default function UserProfile() {
         address: profile.address
       });
       setProfile(prev => ({...prev, name: data.name, phone: data.phone, address: data.address}));
-      alert('Profile updated successfully!');
+      toast.success('Profile updated successfully!');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update profile');
+      toast.error(err.response?.data?.message || 'Failed to update profile');
     } finally {
       setSaving(false);
     }
@@ -75,27 +77,56 @@ export default function UserProfile() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setProfile(prev => ({ ...prev, profileImage: data }));
+      toast.success('Profile image updated successfully!');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to upload image');
+      toast.error(err.response?.data?.message || 'Failed to upload image');
     } finally {
       setUploading(false);
     }
   };
 
-  if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh]">
-      <div className="w-8 h-8 border-4 border-slate-300 border-t-indigo-600 rounded-full animate-spin"></div>
-      <p className="mt-4 text-slate-500 font-medium animate-pulse">Loading Profile...</p>
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-700 pb-12">
+        <div className="space-y-2">
+          <Skeleton variant="title" className="w-64" />
+          <Skeleton variant="text" className="w-96" />
+        </div>
+        <div className="grid lg:grid-cols-[1fr,350px] gap-8">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden h-fit">
+            <Skeleton className="h-40 w-full" />
+            <div className="px-8 pb-8 space-y-6">
+              <Skeleton variant="circle" className="w-32 h-32 -mt-16 border-[6px] border-white" />
+              <div className="grid md:grid-cols-2 gap-6">
+                {Array(4).fill(0).map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton variant="text" className="w-24" />
+                    <Skeleton className="h-12 w-full rounded-2xl" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="space-y-6">
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 space-y-4">
+              <Skeleton variant="avatar" className="rounded-2xl" />
+              <Skeleton variant="title" className="w-3/4" />
+              <Skeleton variant="text" />
+              <Skeleton className="h-32 w-full rounded-3xl" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-12">
       
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Account Settings</h1>
-        <p className="text-slate-500 mt-1 text-lg">Update your personal information to get better service.</p>
+      <div className="px-1">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Account Settings</h1>
+        <p className="text-slate-500 mt-1 text-base sm:text-lg">Update your personal information to get better service.</p>
       </div>
 
       <div className="grid lg:grid-cols-[1fr,350px] gap-8">
@@ -109,7 +140,7 @@ export default function UserProfile() {
              <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-white opacity-10 rounded-full blur-2xl"></div>
           </div>
           
-          <div className="px-8 pb-8 relative">
+          <div className="px-4 sm:px-8 pb-8 relative">
             {/* Avatar Upload */}
             <div className="relative w-32 h-32 -mt-16 mb-8 rounded-full border-[6px] border-white bg-slate-50 shadow-xl group">
               {profile.profileImage?.url ? (
@@ -202,7 +233,7 @@ export default function UserProfile() {
 
         {/* Side Stats Section */}
         <div className="space-y-6">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-8 relative overflow-hidden group">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6 sm:p-8 relative overflow-hidden group">
              {/* Decorative Background Icon */}
              <div className="absolute -right-8 -bottom-8 opacity-[0.03] text-indigo-600 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500">
                <Activity className="w-64 h-64" />

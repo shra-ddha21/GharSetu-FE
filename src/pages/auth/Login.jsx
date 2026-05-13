@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../../contexts/AuthContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { CloudCog, X, Loader2, Eye, EyeOff } from 'lucide-react';
+import { CloudCog, X, Loader2, Eye, EyeOff, Home } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Login() {
@@ -21,14 +21,21 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      const endpoint = role === 'admin' ? '/admin/login' : role === 'provider' ? '/providers/login' : '/users/login';
+      let currentRole = role;
+      let endpoint = role === 'provider' ? '/providers/login' : '/users/login';
+      
+      if (email === 'gharsetu03@gmail.com' || email === 'admin') {
+        currentRole = 'admin';
+        endpoint = '/admin/login';
+      }
+
       const { data } = await api.post(endpoint, { email, password });
       
       const userData = data.user || data.admin || data.provider;
-      login(data.token, { ...userData, role });
+      login(data.token, { ...userData, role: currentRole });
       
       toast.success('Successfully logged in!');
-      navigate(`/${role}/dashboard`);
+      navigate(`/${currentRole}/dashboard`);
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
       toast.error(err.response?.data?.message || 'Login failed');
@@ -38,7 +45,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 font-sans text-slate-900 p-6 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-slate-100 font-sans text-slate-900 p-2 sm:p-6 relative overflow-hidden">
       {/* Background Decorative Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-50 rounded-full blur-3xl opacity-50"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-50 rounded-full blur-3xl opacity-50"></div>
@@ -53,12 +60,17 @@ export default function Login() {
         </Link>
 
         {/* Left Section: Branding */}
-        <div className="md:w-5/12 bg-indigo-600 text-white p-6 md:p-10 flex flex-col justify-start items-start text-left relative overflow-hidden pt-10 md:pt-16">
+        <div className="hidden md:flex md:w-5/12 bg-indigo-600 text-white p-6 md:p-10 flex-col justify-start items-start text-left relative overflow-hidden pt-10 md:pt-16">
           <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
             <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] bg-white rounded-full blur-3xl"></div>
           </div>
           <div className="relative z-10 flex flex-col items-start w-full max-w-md">
-            <h1 className="text-3xl font-extrabold mb-3 tracking-tight">GharSetu</h1>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-white outline outline-4 outline-white/20 rounded-xl flex items-center justify-center text-indigo-600 transform hover:rotate-12 transition-transform duration-300">
+                <Home className="w-5 h-5" />
+              </div>
+              <h1 className="text-3xl font-extrabold tracking-tight">GharSetu</h1>
+            </div>
             <div className="w-full h-1 bg-white/30 rounded-full mb-6"></div>
             <p className="text-lg text-indigo-100 leading-snug font-medium">
               Your trusted bridge for home services.
@@ -80,7 +92,7 @@ export default function Login() {
             </div>
 
             <div className="flex bg-slate-100 p-1 rounded-xl mb-6">
-              {['user', 'provider', 'admin'].map((r) => (
+              {['user', 'provider'].map((r) => (
                 <button
                   key={r}
                   type="button"

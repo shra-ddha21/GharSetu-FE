@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../contexts/AuthContext';
 import { User, Mail, Calendar, Phone, Video, Info } from 'lucide-react';
+import Skeleton from '../../components/Skeleton';
 
 const getStatusStyle = (status) => {
   switch (status) {
@@ -32,7 +33,31 @@ export default function Assigned() {
     fetchRequests();
   }, []);
 
-  if (loading) return <div className="p-8 text-center text-slate-500 font-medium">Loading assigned work...</div>;
+  if (loading) {
+    return (
+      <div className="space-y-6 animate-in fade-in duration-700">
+        <Skeleton variant="title" className="w-48 h-8 mb-6" />
+        {Array(3).fill(0).map((_, i) => (
+          <div key={i} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+            <div className="flex justify-between">
+              <div className="space-y-2 flex-1">
+                <Skeleton variant="title" className="w-1/2 h-6" />
+                <Skeleton variant="text" className="w-1/3" />
+              </div>
+              <Skeleton className="w-24 h-6 rounded-full" />
+            </div>
+            <div className="pt-4 border-t border-slate-50 space-y-3">
+              <Skeleton variant="text" className="w-1/4" />
+              <div className="grid grid-cols-2 gap-4">
+                <Skeleton variant="text" />
+                <Skeleton variant="text" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div>

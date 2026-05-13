@@ -3,12 +3,14 @@ import { api } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { MapPin, Mail, Phone, Briefcase, CheckCircle, XCircle, Clock, ShieldCheck, User } from 'lucide-react';
 
+import Skeleton from '../../components/Skeleton';
+
 export default function Providers() {
   const [providers, setProviders] = useState([]);
   const [statusFilter, setStatusFilter] = useState('');
   const [loading, setLoading] = useState(true);
   
-  // Rejection Modal State
+  // ... (rest of the component state)
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [rejectProviderId, setRejectProviderId] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
@@ -58,6 +60,8 @@ export default function Providers() {
         return <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full uppercase tracking-wider"><ShieldCheck className="w-3.5 h-3.5" /> Approved</span>;
       case 'rejected':
         return <span className="flex items-center gap-1.5 px-3 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded-full uppercase tracking-wider"><XCircle className="w-3.5 h-3.5" /> Rejected</span>;
+      case 'deactivated':
+        return <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-200 text-slate-800 text-xs font-semibold rounded-full uppercase tracking-wider"><ShieldCheck className="w-3.5 h-3.5 opacity-50" /> Deactivated</span>;
       case 'pending':
         return <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full uppercase tracking-wider"><Clock className="w-3.5 h-3.5" /> Pending</span>;
       default:
@@ -80,7 +84,8 @@ export default function Providers() {
           >
             <option value="">All Providers</option>
             <option value="pending">Pending Approval</option>
-            <option value="approved">Approved</option>
+            <option value="approved">Approved / Active</option>
+            <option value="deactivated">Deactivated / Blocked</option>
             <option value="rejected">Rejected</option>
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
@@ -91,9 +96,23 @@ export default function Providers() {
 
       <div className="space-y-4">
         {loading ? (
-          <div className="py-20 flex justify-center">
-            <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-          </div>
+          Array(5).fill(0).map((_, i) => (
+            <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+              <div className="flex justify-between items-start">
+                <div className="space-y-3 flex-1">
+                  <div className="flex gap-3">
+                    <Skeleton variant="title" className="w-1/3 h-6" />
+                    <Skeleton className="w-24 h-6 rounded-full" />
+                  </div>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <Skeleton variant="text" className="w-3/4" />
+                    <Skeleton variant="text" className="w-3/4" />
+                    <Skeleton variant="text" className="w-3/4" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
         ) : (
           <>
             {providers.map(p => (
@@ -131,6 +150,28 @@ export default function Providers() {
                       className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-xl transition-colors"
                     >
                       <XCircle className="w-4 h-4" /> Reject
+                    </button>
+                  </div>
+                )}
+
+                {p.status === 'approved' && (
+                  <div className="flex flex-row md:flex-col gap-2 min-w-[140px] pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-slate-100 md:pl-6">
+                    <button 
+                      onClick={() => handleAction(p._id, 'deactivate')}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-semibold rounded-xl transition-colors border border-red-100"
+                    >
+                      <XCircle className="w-4 h-4" /> Deactivate
+                    </button>
+                  </div>
+                )}
+
+                {p.status === 'deactivated' && (
+                  <div className="flex flex-row md:flex-col gap-2 min-w-[140px] pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-slate-100 md:pl-6">
+                    <button 
+                      onClick={() => handleAction(p._id, 'reactivate')}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
+                    >
+                      <CheckCircle className="w-4 h-4" /> Reactivate
                     </button>
                   </div>
                 )}

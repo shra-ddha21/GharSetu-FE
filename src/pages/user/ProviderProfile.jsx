@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../contexts/AuthContext';
 import { useBooking } from '../../contexts/BookingContext';
-import { ArrowLeft, MapPin, Briefcase, Clock, ImageIcon, Map } from 'lucide-react';
+import { ArrowLeft, MapPin, Briefcase, Clock, ImageIcon, Map, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ProviderMap from '../../components/ProviderMap';
+import Skeleton from '../../components/Skeleton';
 
 export default function ProviderProfile() {
   const { id } = useParams();
@@ -14,6 +15,7 @@ export default function ProviderProfile() {
   const [provider, setProvider] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(null);
 
   const isSelected = selectedProviders.includes(id);
 
@@ -31,11 +33,30 @@ export default function ProviderProfile() {
     };
     fetchProvider();
   }, [id]);
-
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+      <div className="flex flex-col gap-8 max-w-4xl mx-auto w-full animate-in fade-in duration-700">
+        <Skeleton className="h-10 w-32 rounded-xl" />
+        <div className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-8">
+          <Skeleton variant="circle" className="w-32 h-32" />
+          <div className="flex-1 space-y-3">
+            <Skeleton variant="title" className="w-64" />
+            <Skeleton variant="text" className="w-48" />
+            <div className="flex gap-2">
+              <Skeleton className="w-24 h-6 rounded-full" />
+              <Skeleton className="w-24 h-6 rounded-full" />
+            </div>
+          </div>
+        </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <Skeleton className="h-64 rounded-[2rem]" />
+          <div className="space-y-4">
+            <Skeleton variant="title" className="w-48" />
+            <Skeleton variant="text" />
+            <Skeleton variant="text" />
+            <Skeleton variant="text" className="w-1/2" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -160,7 +181,8 @@ export default function ProviderProfile() {
             {provider.portfolioImages.map((img, i) => (
               <div
                 key={img.publicId || i}
-                className="aspect-square rounded-xl overflow-hidden bg-slate-100 border border-slate-200"
+                className="aspect-square rounded-xl overflow-hidden bg-slate-100 border border-slate-200 cursor-pointer"
+                onClick={() => setSelectedImageIndex(i)}
               >
                 <img
                   src={img.url}
@@ -200,6 +222,49 @@ export default function ProviderProfile() {
             className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium transition-colors"
           >
             Continue to Request
+          </button>
+        </div>
+      )}
+      {/* Image Modal */}
+      {selectedImageIndex !== null && provider?.portfolioImages && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          onClick={() => setSelectedImageIndex(null)}
+        >
+          <button 
+            className="absolute top-6 right-6 text-white/70 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all z-10"
+            onClick={() => setSelectedImageIndex(null)}
+          >
+            <X className="w-6 h-6" />
+          </button>
+          
+          <button 
+            className="absolute left-4 md:left-8 text-white/70 hover:text-white p-3 rounded-full bg-white/10 hover:bg-white/20 transition-all disabled:opacity-30 disabled:hover:bg-white/10 disabled:cursor-not-allowed z-10"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedImageIndex(prev => Math.max(0, prev - 1));
+            }}
+            disabled={selectedImageIndex === 0}
+          >
+            <ChevronLeft className="w-8 h-8" />
+          </button>
+
+          <img 
+            src={provider.portfolioImages[selectedImageIndex]?.url} 
+            alt="Full size portfolio view" 
+            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl relative z-0"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          <button 
+            className="absolute right-4 md:right-8 text-white/70 hover:text-white p-3 rounded-full bg-white/10 hover:bg-white/20 transition-all disabled:opacity-30 disabled:hover:bg-white/10 disabled:cursor-not-allowed z-10"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedImageIndex(prev => Math.min(provider.portfolioImages.length - 1, prev + 1));
+            }}
+            disabled={selectedImageIndex === provider.portfolioImages.length - 1}
+          >
+            <ChevronRight className="w-8 h-8" />
           </button>
         </div>
       )}
